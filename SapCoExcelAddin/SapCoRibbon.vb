@@ -488,8 +488,7 @@ Public Class SapCoRibbon
         aCompCodeSplit = Split(aCompCodes, ";")
         Dim aSAPGetCOObject As New SAPGetCOObject(aSapCon)
         For Each aCompCode In aCompCodeSplit
-            '   TODO change that to read the objects with key-figure plan
-            aSAPGetCOObject.GetCoObjects("O", aFiscy, aSVers, aCoAre, CStr(aCompCode), aObjects)
+            aSAPGetCOObject.GetCoObjects("S", aFiscy, aSVers, aCoAre, CStr(aCompCode), aObjects)
         Next aCompCode
         If aObjects.Count = 0 Then
             Exit Sub
