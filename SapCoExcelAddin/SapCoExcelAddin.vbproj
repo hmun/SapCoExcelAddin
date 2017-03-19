@@ -206,12 +206,15 @@
   -->
   <ItemGroup>
     <AppDesigner Include="My Project\" />
+    <Compile Include="DateFormatString.vb" />
     <Compile Include="FormLogon.Designer.vb">
       <DependentUpon>FormLogon.vb</DependentUpon>
     </Compile>
     <Compile Include="FormLogon.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="SAPAcctngActivityAlloc.vb" />
+    <Compile Include="SAPAcctngActivityItem.vb" />
     <Compile Include="SAPBapiTranctionCommit.vb" />
     <Compile Include="SapCon.vb" />
     <Compile Include="SAPCOObject.vb" />

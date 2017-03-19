@@ -8,6 +8,7 @@ Imports SAP.Middleware.Connector
 Public Class SapCoRibbon
     Private aSapCon
     Private aSapGeneral
+    Const AI_CM = 19 ' column of message for activity posting
 
     Private aCoAre As String
     Private aFiscy As String
@@ -18,9 +19,12 @@ Public Class SapCoRibbon
     Private aCurt As String
     Private aCompCodes As String
 
+    Private aMaxLines As String
+
     Private Function getParameters() As Integer
         Dim aPws As Excel.Worksheet
         Dim aWB As Excel.Workbook
+        Dim akey As String
         aWB = Globals.SapCoExcelAddin.Application.ActiveWorkbook
         Try
             aPws = aWB.Worksheets("Parameter")
@@ -30,6 +34,13 @@ Public Class SapCoRibbon
             getParameters = False
             Exit Function
         End Try
+        akey = CStr(aPws.Cells(1, 1).Value)
+        If akey <> "SAPCoOmPlanningTotal" Then
+            MsgBox("Cell A1 of the parameter sheet does not contain the key SAPCoOmPlanningTotal. Check if the current workbook is a valid SAP CO-OM Planning Template",
+                   MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "Sap CO-OM")
+            getParameters = False
+            Exit Function
+        End If
         aCoAre = CStr(aPws.Cells(2, 2).Value)
         aFiscy = CStr(aPws.Cells(3, 2).Value)
         aPfrom = CStr(aPws.Cells(4, 2).Value)
@@ -588,5 +599,121 @@ Public Class SapCoRibbon
             MsgBox("Error: Exception " & Ex.Message, MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "ButtonPostSK_Click")
         End Try
         aDws.Cells(i, 2) = aRetStr
+    End Sub
+
+    Private Function getActivityAllocParameters() As Integer
+        Dim aPws As Excel.Worksheet
+        Dim aWB As Excel.Workbook
+        Dim aKey As String
+        aWB = Globals.SapCoExcelAddin.Application.ActiveWorkbook
+        Try
+            aPws = aWB.Worksheets("Parameter")
+        Catch Exc As System.Exception
+            MsgBox("No Parameter Sheet in current workbook. Check if the current workbook is a valid SAP CO ActivityAlloc Template",
+                   MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "Sap CO-OM")
+            getActivityAllocParameters = False
+            Exit Function
+        End Try
+        aKey = CStr(aPws.Cells(1, 1).Value)
+        If aKey <> "SAPAcctngActivityAlloc" Then
+            MsgBox("Cell A1 of the parameter sheet does not contain the key SAPAcctngActivityAlloc. Check if the current workbook is a valid SAP CO Activity Allocation Template",
+                   MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "Sap CO-OM")
+            getActivityAllocParameters = False
+            Exit Function
+        End If
+        aCoAre = CStr(aPws.Cells(2, 2).Value)
+        aMaxLines = CInt(aPws.Cells(3, 2).Value)
+        If aCoAre = "" Then
+            MsgBox("Please fill all obligatory fields in the parameter sheet!", MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "Sap ActivityAlloc")
+            getActivityAllocParameters = False
+            Exit Function
+        End If
+        getActivityAllocParameters = True
+    End Function
+
+    Private Sub ButtonActivityAllocCheck_Click(sender As Object, e As RibbonControlEventArgs) Handles ButtonActivityAllocCheck.Click
+        SAP_ActivityAlloc_execute(pTest:=True)
+    End Sub
+
+    Private Sub ButtonActivityAllocPost_Click(sender As Object, e As RibbonControlEventArgs) Handles ButtonActivityAllocPost.Click
+        SAP_ActivityAlloc_execute(pTest:=False)
+    End Sub
+
+    Private Sub SAP_ActivityAlloc_execute(pTest As Boolean)
+        Dim i As Integer
+        Dim aLines As Integer
+        Dim aPostLine As Integer
+        Dim aData As New Collection
+        Dim aRetStr As String
+        Dim aDateFormatString As New DateFormatString
+        Dim aSAPAcctngActivityItem As New SAPAcctngActivityItem
+
+        If getActivityAllocParameters() = False Then
+            Exit Sub
+        End If
+        If checkCon() = False Then
+            Exit Sub
+        End If
+        Dim aSAPAcctngActivityAlloc As New SAPAcctngActivityAlloc(aSapCon)
+        Dim aWB As Excel.Workbook
+        Dim aDws As Excel.Worksheet
+        aWB = Globals.SapCoExcelAddin.Application.ActiveWorkbook
+        Try
+            aDws = aWB.Worksheets("Data")
+        Catch Exc As System.Exception
+            MsgBox("No Data Sheet in current workbook. Check if the current workbook is a valid SAP CO ActivityAlloc Template",
+                       MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "Sap CO-OM")
+            Exit Sub
+        End Try
+        aRetStr = ""
+        aDws.Activate()
+        Dim aBUDAT As String
+        Dim aBLDAT As String
+        Dim aCells As Excel.Range
+        aBUDAT = ""
+        aBLDAT = ""
+        Try
+            i = 2
+            aLines = 1
+            aPostLine = i - 1
+            Do
+                If InStr(CStr(aDws.Cells(i, AI_CM).Value), "Beleg wird unter der Nummer") = 0 And
+                   InStr(CStr(aDws.Cells(i, AI_CM).Value), "Document is posted under number") = 0 Then
+                    If aBUDAT = "" Or aMaxLines = 1 Then
+                        aBUDAT = Format(aDws.Cells(i, 1).Value, aDateFormatString.getString)
+                        aBLDAT = Format(aDws.Cells(i, 2).Value, aDateFormatString.getString)
+                    End If
+                    aSAPAcctngActivityItem = aSAPAcctngActivityItem.create(CStr(aDws.Cells(i, 3).Value), CStr(aDws.Cells(i, 4).Value),
+                                                                           CStr(aDws.Cells(i, 5).Value), CDbl(aDws.Cells(i, 6).Value),
+                                                                           CStr(aDws.Cells(i, 7).Value), CStr(aDws.Cells(i, 8).Value),
+                                                                           CStr(aDws.Cells(i, 9).Value), CStr(aDws.Cells(i, 10).Value),
+                                                                           CStr(aDws.Cells(i, 11).Value), CStr(aDws.Cells(i, 12).Value),
+                                                                           CDbl(aDws.Cells(i, 14).Value), CDbl(aDws.Cells(i, 15).Value),
+                                                                           CDbl(aDws.Cells(i, 16).Value), CInt(aDws.Cells(i, 17).Value),
+                                                                           CStr(aDws.Cells(i, 18).Value), CStr(aDws.Cells(i, 13).Value))
+                    aData.Add(aSAPAcctngActivityItem)
+                    If aLines >= CInt(aMaxLines) Then
+                        aRetStr = aSAPAcctngActivityAlloc.post(aCoAre, CDate(aBUDAT), CDate(aBLDAT), aData, pTest)
+                        aCells = aDws.Range(aDws.Cells(aPostLine + 1, AI_CM), aDws.Cells(i, AI_CM))
+                        aCells.Value = aRetStr
+                        aData = New Collection
+                        aLines = 1
+                        aBUDAT = ""
+                        aPostLine = i
+                    Else
+                        aLines = aLines + 1
+                    End If
+                End If
+                i = i + 1
+            Loop While CStr(aDws.Cells(i, 1).value) <> ""
+            If aData.Count > 0 Then
+                aRetStr = aSAPAcctngActivityAlloc.post(aCoAre, CDate(aBUDAT), CDate(aBLDAT), aData, pTest)
+                aCells = aDws.Range(aDws.Cells(aPostLine + 1, AI_CM), aDws.Cells(i - 1, AI_CM))
+                aCells.Value = aRetStr
+            End If
+        Catch Ex As System.Exception
+            MsgBox("Error: Exception " & Ex.Message, MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "ButtonPostSK_Click")
+        End Try
+
     End Sub
 End Class
