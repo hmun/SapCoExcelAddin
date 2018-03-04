@@ -30,16 +30,16 @@
     <DefineConstants>VSTO40</DefineConstants>
     <StartupObject>
     </StartupObject>
+    <IsWebBootstrapper>False</IsWebBootstrapper>
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <PublishUrl>D:\VS_WS\SapCoExcelAddin_publish_64\</PublishUrl>
     <InstallUrl />
     <TargetCulture>en</TargetCulture>
-    <ApplicationVersion>1.0.0.0</ApplicationVersion>
+    <ApplicationVersion>1.0.1.1</ApplicationVersion>
     <AutoIncrementApplicationRevision>true</AutoIncrementApplicationRevision>
     <UpdateEnabled>true</UpdateEnabled>
     <UpdateInterval>7</UpdateInterval>
     <UpdateIntervalUnits>days</UpdateIntervalUnits>
-    <IsWebBootstrapper>False</IsWebBootstrapper>
     <ProductName>SapCoExcelAddin</ProductName>
     <PublisherName />
     <SupportUrl />
@@ -214,7 +214,9 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="SAPAcctngActivityAlloc.vb" />
+    <Compile Include="SAPAcctngPrimCostsItem.vb" />
     <Compile Include="SAPAcctngActivityItem.vb" />
+    <Compile Include="SAPAcctngRepstPrimCosts.vb" />
     <Compile Include="SAPBapiTranctionCommit.vb" />
     <Compile Include="SapCon.vb" />
     <Compile Include="SAPCOObject.vb" />
@@ -322,8 +324,8 @@
     <VisualStudio>
       <FlavorProperties GUID="{BAA0C2D2-18E2-41B9-852F-F413020CAA33}">
         <ProjectProperties HostName="Excel" HostPackage="{29A7B9D7-A7F1-4328-8EF0-6B2D1A56B2C1}" OfficeVersion="15.0" VstxVersion="4.0" ApplicationType="Excel" Language="vb" TemplatesPath="" DebugInfoExeName="#Software\Microsoft\Office\15.0\Excel\InstallRoot\Path#excel.exe" DebugInfoCommandLine="/x" AddItemTemplatesGuid="{DCFE8D25-4715-4C33-9EAB-A34A9EBC9544}" />
-        <Host Name="Excel" IconIndex="0">
-          <HostItem Name="ThisAddIn" Code="SapCoExcelAddin.vb" CanonicalName="AddIn" CanActivate="false" IconIndex="1" Blueprint="SapCoExcelAddin.Designer.xml" GeneratedCode="SapCoExcelAddin.Designer.vb" />
+        <Host Name="Excel" PublishedHash="69C324AB27932AA2FBF2B7EA72250886FF164DE6" IconIndex="0">
+          <HostItem Name="ThisAddIn" Code="SapCoExcelAddin.vb" CanonicalName="AddIn" PublishedHash="DD1548AF78A1B9165EE347F1639F8C6CDABED960" CanActivate="false" IconIndex="1" Blueprint="SapCoExcelAddin.Designer.xml" GeneratedCode="SapCoExcelAddin.Designer.vb" />
         </Host>
       </FlavorProperties>
     </VisualStudio>

@@ -45,7 +45,8 @@ Public Class SAPGetCOObject
                                                        oObjects(i).GetValue("KSTAR"),
                                                        oObjects(i).GetValue("SKOSTL"),
                                                        oObjects(i).GetValue("SLSTAR"),
-                                                       oObjects(i).GetValue("WBS_ELEMENT"))
+                                                       oObjects(i).GetValue("WBS_ELEMENT"),
+                                                       oObjects(i).GetValue("STAGR"))
                     pObjects.Add(lSAPCOObject)
                 End If
             Next i

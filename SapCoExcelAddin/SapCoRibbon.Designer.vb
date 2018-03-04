@@ -49,25 +49,41 @@
         Me.ButtonPostAO = Me.Factory.CreateRibbonButton
         Me.ButtonPostPC = Me.Factory.CreateRibbonButton
         Me.ButtonPostAI = Me.Factory.CreateRibbonButton
-        Me.ButtonReadSK = Me.Factory.CreateRibbonButton
         Me.ButtonPostSK = Me.Factory.CreateRibbonButton
-        Me.SAPCoLogon = Me.Factory.CreateRibbonGroup
-        Me.ButtonLogon = Me.Factory.CreateRibbonButton
-        Me.ButtonLogoff = Me.Factory.CreateRibbonButton
+        Me.ButtonReadSK = Me.Factory.CreateRibbonButton
+        Me.SAPCoOmPlanPer = Me.Factory.CreateRibbonGroup
+        Me.ButtonReadPerAO = Me.Factory.CreateRibbonButton
+        Me.ButtonReadPerPC = Me.Factory.CreateRibbonButton
+        Me.ButtonReadPerAI = Me.Factory.CreateRibbonButton
+        Me.ButtonPostPerAO = Me.Factory.CreateRibbonButton
+        Me.ButtonPostPerPC = Me.Factory.CreateRibbonButton
+        Me.ButtonPostPerAI = Me.Factory.CreateRibbonButton
+        Me.ButtonPostPerSK = Me.Factory.CreateRibbonButton
+        Me.ButtonReadPerSK = Me.Factory.CreateRibbonButton
         Me.SAPActivityAlloc = Me.Factory.CreateRibbonGroup
         Me.ButtonActivityAllocCheck = Me.Factory.CreateRibbonButton
         Me.ButtonActivityAllocPost = Me.Factory.CreateRibbonButton
+        Me.SAPRepstPrimCosts = Me.Factory.CreateRibbonGroup
+        Me.ButtonRepstPrimCostsCheck = Me.Factory.CreateRibbonButton
+        Me.ButtonRepstPrimCostsPost = Me.Factory.CreateRibbonButton
+        Me.SAPCoLogon = Me.Factory.CreateRibbonGroup
+        Me.ButtonLogon = Me.Factory.CreateRibbonButton
+        Me.ButtonLogoff = Me.Factory.CreateRibbonButton
         Me.SapCo.SuspendLayout()
         Me.SAPCoOmPlan.SuspendLayout()
-        Me.SAPCoLogon.SuspendLayout()
+        Me.SAPCoOmPlanPer.SuspendLayout()
         Me.SAPActivityAlloc.SuspendLayout()
+        Me.SAPRepstPrimCosts.SuspendLayout()
+        Me.SAPCoLogon.SuspendLayout()
         Me.SuspendLayout()
         '
         'SapCo
         '
         Me.SapCo.ControlId.ControlIdType = Microsoft.Office.Tools.Ribbon.RibbonControlIdType.Office
         Me.SapCo.Groups.Add(Me.SAPCoOmPlan)
+        Me.SapCo.Groups.Add(Me.SAPCoOmPlanPer)
         Me.SapCo.Groups.Add(Me.SAPActivityAlloc)
+        Me.SapCo.Groups.Add(Me.SAPRepstPrimCosts)
         Me.SapCo.Groups.Add(Me.SAPCoLogon)
         Me.SapCo.Label = "SAP CO"
         Me.SapCo.Name = "SapCo"
@@ -121,34 +137,78 @@
         Me.ButtonPostAI.Name = "ButtonPostAI"
         Me.ButtonPostAI.ScreenTip = "Post Activity Input"
         '
-        'ButtonReadSK
-        '
-        Me.ButtonReadSK.Label = "Read SK"
-        Me.ButtonReadSK.Name = "ButtonReadSK"
-        Me.ButtonReadSK.ScreenTip = "Read Statistical Keyfigures"
-        '
         'ButtonPostSK
         '
         Me.ButtonPostSK.Label = "Post SK"
         Me.ButtonPostSK.Name = "ButtonPostSK"
         Me.ButtonPostSK.ScreenTip = "Post Statistical Keyfigures"
         '
-        'SAPCoLogon
+        'ButtonReadSK
         '
-        Me.SAPCoLogon.Items.Add(Me.ButtonLogon)
-        Me.SAPCoLogon.Items.Add(Me.ButtonLogoff)
-        Me.SAPCoLogon.Label = "Logon"
-        Me.SAPCoLogon.Name = "SAPCoLogon"
+        Me.ButtonReadSK.Label = "Read SK"
+        Me.ButtonReadSK.Name = "ButtonReadSK"
+        Me.ButtonReadSK.ScreenTip = "Read Statistical Keyfigures"
         '
-        'ButtonLogon
+        'SAPCoOmPlanPer
         '
-        Me.ButtonLogon.Label = "SAP Logon"
-        Me.ButtonLogon.Name = "ButtonLogon"
+        Me.SAPCoOmPlanPer.Items.Add(Me.ButtonReadPerAO)
+        Me.SAPCoOmPlanPer.Items.Add(Me.ButtonReadPerPC)
+        Me.SAPCoOmPlanPer.Items.Add(Me.ButtonReadPerAI)
+        Me.SAPCoOmPlanPer.Items.Add(Me.ButtonPostPerAO)
+        Me.SAPCoOmPlanPer.Items.Add(Me.ButtonPostPerPC)
+        Me.SAPCoOmPlanPer.Items.Add(Me.ButtonPostPerAI)
+        Me.SAPCoOmPlanPer.Items.Add(Me.ButtonReadPerSK)
+        Me.SAPCoOmPlanPer.Items.Add(Me.ButtonPostPerSK)
+        Me.SAPCoOmPlanPer.Label = "CO-OM Plan Periodic"
+        Me.SAPCoOmPlanPer.Name = "SAPCoOmPlanPer"
         '
-        'ButtonLogoff
+        'ButtonReadPerAO
         '
-        Me.ButtonLogoff.Label = "SAP Logoff"
-        Me.ButtonLogoff.Name = "ButtonLogoff"
+        Me.ButtonReadPerAO.Label = "Read Per AO"
+        Me.ButtonReadPerAO.Name = "ButtonReadPerAO"
+        Me.ButtonReadPerAO.ScreenTip = "Read Activity Output"
+        '
+        'ButtonReadPerPC
+        '
+        Me.ButtonReadPerPC.Label = "Read Per PC"
+        Me.ButtonReadPerPC.Name = "ButtonReadPerPC"
+        Me.ButtonReadPerPC.ScreenTip = "Read Primary Cost"
+        '
+        'ButtonReadPerAI
+        '
+        Me.ButtonReadPerAI.Label = "Read Per AI"
+        Me.ButtonReadPerAI.Name = "ButtonReadPerAI"
+        Me.ButtonReadPerAI.ScreenTip = "Read Activity Input"
+        '
+        'ButtonPostPerAO
+        '
+        Me.ButtonPostPerAO.Label = "Post Per AO"
+        Me.ButtonPostPerAO.Name = "ButtonPostPerAO"
+        Me.ButtonPostPerAO.ScreenTip = "Post Activity Output"
+        '
+        'ButtonPostPerPC
+        '
+        Me.ButtonPostPerPC.Label = "Post Per PC"
+        Me.ButtonPostPerPC.Name = "ButtonPostPerPC"
+        Me.ButtonPostPerPC.ScreenTip = "Post Primary Cost"
+        '
+        'ButtonPostPerAI
+        '
+        Me.ButtonPostPerAI.Label = "Post Per AI"
+        Me.ButtonPostPerAI.Name = "ButtonPostPerAI"
+        Me.ButtonPostPerAI.ScreenTip = "Post Activity Input"
+        '
+        'ButtonPostPerSK
+        '
+        Me.ButtonPostPerSK.Label = "Post Per SK"
+        Me.ButtonPostPerSK.Name = "ButtonPostPerSK"
+        Me.ButtonPostPerSK.ScreenTip = "Post Statistical Keyfigures"
+        '
+        'ButtonReadPerSK
+        '
+        Me.ButtonReadPerSK.Label = "Read Per SK"
+        Me.ButtonReadPerSK.Name = "ButtonReadPerSK"
+        Me.ButtonReadPerSK.ScreenTip = "Read Statistical Keyfigures"
         '
         'SAPActivityAlloc
         '
@@ -169,6 +229,42 @@
         Me.ButtonActivityAllocPost.Name = "ButtonActivityAllocPost"
         Me.ButtonActivityAllocPost.ScreenTip = "Post Activity Allocation Document"
         '
+        'SAPRepstPrimCosts
+        '
+        Me.SAPRepstPrimCosts.Items.Add(Me.ButtonRepstPrimCostsCheck)
+        Me.SAPRepstPrimCosts.Items.Add(Me.ButtonRepstPrimCostsPost)
+        Me.SAPRepstPrimCosts.Label = "CO RepstPrimCosts"
+        Me.SAPRepstPrimCosts.Name = "SAPRepstPrimCosts"
+        '
+        'ButtonRepstPrimCostsCheck
+        '
+        Me.ButtonRepstPrimCostsCheck.Label = "RepstPrimCosts Check"
+        Me.ButtonRepstPrimCostsCheck.Name = "ButtonRepstPrimCostsCheck"
+        Me.ButtonRepstPrimCostsCheck.ScreenTip = "Check Repost Primary Costs Document"
+        '
+        'ButtonRepstPrimCostsPost
+        '
+        Me.ButtonRepstPrimCostsPost.Label = "RepstPrimCosts Post"
+        Me.ButtonRepstPrimCostsPost.Name = "ButtonRepstPrimCostsPost"
+        Me.ButtonRepstPrimCostsPost.ScreenTip = "Post Repost Primary Costs Document"
+        '
+        'SAPCoLogon
+        '
+        Me.SAPCoLogon.Items.Add(Me.ButtonLogon)
+        Me.SAPCoLogon.Items.Add(Me.ButtonLogoff)
+        Me.SAPCoLogon.Label = "Logon"
+        Me.SAPCoLogon.Name = "SAPCoLogon"
+        '
+        'ButtonLogon
+        '
+        Me.ButtonLogon.Label = "SAP Logon"
+        Me.ButtonLogon.Name = "ButtonLogon"
+        '
+        'ButtonLogoff
+        '
+        Me.ButtonLogoff.Label = "SAP Logoff"
+        Me.ButtonLogoff.Name = "ButtonLogoff"
+        '
         'SapCoRibbon
         '
         Me.Name = "SapCoRibbon"
@@ -178,10 +274,14 @@
         Me.SapCo.PerformLayout()
         Me.SAPCoOmPlan.ResumeLayout(False)
         Me.SAPCoOmPlan.PerformLayout()
-        Me.SAPCoLogon.ResumeLayout(False)
-        Me.SAPCoLogon.PerformLayout()
+        Me.SAPCoOmPlanPer.ResumeLayout(False)
+        Me.SAPCoOmPlanPer.PerformLayout()
         Me.SAPActivityAlloc.ResumeLayout(False)
         Me.SAPActivityAlloc.PerformLayout()
+        Me.SAPRepstPrimCosts.ResumeLayout(False)
+        Me.SAPRepstPrimCosts.PerformLayout()
+        Me.SAPCoLogon.ResumeLayout(False)
+        Me.SAPCoLogon.PerformLayout()
         Me.ResumeLayout(False)
 
     End Sub
@@ -202,6 +302,18 @@
     Friend WithEvents SAPActivityAlloc As Microsoft.Office.Tools.Ribbon.RibbonGroup
     Friend WithEvents ButtonActivityAllocCheck As Microsoft.Office.Tools.Ribbon.RibbonButton
     Friend WithEvents ButtonActivityAllocPost As Microsoft.Office.Tools.Ribbon.RibbonButton
+    Friend WithEvents SAPRepstPrimCosts As Microsoft.Office.Tools.Ribbon.RibbonGroup
+    Friend WithEvents ButtonRepstPrimCostsCheck As Microsoft.Office.Tools.Ribbon.RibbonButton
+    Friend WithEvents ButtonRepstPrimCostsPost As Microsoft.Office.Tools.Ribbon.RibbonButton
+    Friend WithEvents SAPCoOmPlanPer As Microsoft.Office.Tools.Ribbon.RibbonGroup
+    Friend WithEvents ButtonReadPerAO As Microsoft.Office.Tools.Ribbon.RibbonButton
+    Friend WithEvents ButtonReadPerPC As Microsoft.Office.Tools.Ribbon.RibbonButton
+    Friend WithEvents ButtonReadPerAI As Microsoft.Office.Tools.Ribbon.RibbonButton
+    Friend WithEvents ButtonPostPerAO As Microsoft.Office.Tools.Ribbon.RibbonButton
+    Friend WithEvents ButtonPostPerPC As Microsoft.Office.Tools.Ribbon.RibbonButton
+    Friend WithEvents ButtonPostPerAI As Microsoft.Office.Tools.Ribbon.RibbonButton
+    Friend WithEvents ButtonPostPerSK As Microsoft.Office.Tools.Ribbon.RibbonButton
+    Friend WithEvents ButtonReadPerSK As Microsoft.Office.Tools.Ribbon.RibbonButton
 End Class
 
 Partial Class ThisRibbonCollection

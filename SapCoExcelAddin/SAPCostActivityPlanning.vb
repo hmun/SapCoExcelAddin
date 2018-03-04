@@ -19,6 +19,69 @@ Public Class SAPCostActivityPlanning
         End Try
     End Sub
 
+    Public Function ReadActivityOutput(pCoAre As String, pFiscy As String, pPfrom As String,
+                             pPto As String, pVers As String, pCurt As String,
+                             pObjects As Collection, pData As Collection) As String
+        ReadActivityOutput = ""
+        Try
+            oRfcFunction = destination.Repository.CreateFunction("BAPI_COSTACTPLN_READACTOUTPUT")
+            RfcSessionManager.BeginContext(destination)
+            Dim lSAPFormat As New SAPFormat
+            Dim oHeaderinfo As IRfcStructure = oRfcFunction.GetStructure("HEADERINFO")
+            Dim oIndexstructure As IRfcTable = oRfcFunction.GetTable("INDEXSTRUCTURE")
+            Dim oCoobject As IRfcTable = oRfcFunction.GetTable("COOBJECT")
+            Dim oPervalue As IRfcTable = oRfcFunction.GetTable("PERVALUE")
+            Dim oRETURN As IRfcTable = oRfcFunction.GetTable("RETURN")
+            oHeaderinfo.SetValue("CO_AREA", pCoAre)
+            oHeaderinfo.SetValue("FISC_YEAR", pFiscy)
+            oHeaderinfo.SetValue("PERIOD_FROM", lSAPFormat.unpack(pPfrom, 3))
+            oHeaderinfo.SetValue("PERIOD_TO", lSAPFormat.unpack(pPto, 3))
+            oHeaderinfo.SetValue("VERSION", lSAPFormat.unpack(pVers, 3))
+            oHeaderinfo.SetValue("PLAN_CURRTYPE", pCurt)
+
+            Dim lCnt As Integer
+            Dim aObjRow As Object
+            lCnt = 0
+            For Each aObjRow In pObjects
+                lCnt = lCnt + 1
+                oCoobject.Append()
+                oCoobject.SetValue("OBJECT_INDEX", lCnt)
+                If aObjRow.Costcenter <> "" Then
+                    oCoobject.SetValue("COSTCENTER", lSAPFormat.unpack(aObjRow.Costcenter, 10))
+                End If
+                If aObjRow.WBS_ELEMENT <> "" Then
+                    oCoobject.SetValue("WBS_ELEMENT", aObjRow.WBS_ELEMENT)
+                End If
+                If aObjRow.Acttype <> "" Then
+                    oCoobject.SetValue("ACTTYPE", aObjRow.Acttype)
+                    '      oCoobject.SetValue("ACTTYPE", lSAPFormat.unpack(aObjRow.Acttype, 6))
+                End If
+                oIndexstructure.Append()
+                oIndexstructure.SetValue("OBJECT_INDEX", lCnt)
+                oIndexstructure.SetValue("VALUE_INDEX", lCnt)
+                oPervalue.Append()
+                oPervalue.SetValue("VALUE_INDEX", lCnt)
+            Next aObjRow
+            ' call the BAPI
+            oRfcFunction.Invoke(destination)
+            If oRETURN.Count = 0 Then
+                ReadActivityOutput = "Success"
+                For i As Integer = 0 To oPervalue.Count - 1
+                    pData.Add(oPervalue(i))
+                Next i
+            Else
+                For i As Integer = 0 To oRETURN.Count - 1
+                    ReadActivityOutput = ReadActivityOutput & ";" & oRETURN(i).GetValue("MESSAGE")
+                Next i
+            End If
+        Catch Ex As System.Exception
+            MsgBox("Error: Exception " & Ex.Message, MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "SAPCostActivityPlanning")
+            ReadActivityOutput = "Error: Exception in ReadActivityOutput"
+        Finally
+            RfcSessionManager.EndContext(destination)
+        End Try
+    End Function
+
     Public Function ReadActivityOutputTot(pCoAre As String, pFiscy As String, pPfrom As String,
                              pPto As String, pVers As String, pCurt As String,
                              pObjects As Collection, pData As Collection, pContrl As Collection) As String
@@ -88,6 +151,70 @@ Public Class SAPCostActivityPlanning
         End Try
     End Function
 
+    Public Function ReadPrimCost(pCoAre As String, pFiscy As String, pPfrom As String,
+                             pPto As String, pVers As String, pCurt As String,
+                             pObjects As Collection, pData As Collection) As String
+        ReadPrimCost = ""
+        Try
+            oRfcFunction = destination.Repository.CreateFunction("BAPI_COSTACTPLN_READPRIMCOST")
+            RfcSessionManager.BeginContext(destination)
+            Dim lSAPFormat As New SAPFormat
+            Dim oHeaderinfo As IRfcStructure = oRfcFunction.GetStructure("HEADERINFO")
+            Dim oIndexstructure As IRfcTable = oRfcFunction.GetTable("INDEXSTRUCTURE")
+            Dim oCoobject As IRfcTable = oRfcFunction.GetTable("COOBJECT")
+            Dim oPerValue As IRfcTable = oRfcFunction.GetTable("PERVALUE")
+            Dim oRETURN As IRfcTable = oRfcFunction.GetTable("RETURN")
+            oHeaderinfo.SetValue("CO_AREA", pCoAre)
+            oHeaderinfo.SetValue("FISC_YEAR", pFiscy)
+            oHeaderinfo.SetValue("PERIOD_FROM", lSAPFormat.unpack(pPfrom, 3))
+            oHeaderinfo.SetValue("PERIOD_TO", lSAPFormat.unpack(pPto, 3))
+            oHeaderinfo.SetValue("VERSION", lSAPFormat.unpack(pVers, 3))
+            oHeaderinfo.SetValue("PLAN_CURRTYPE", pCurt)
+
+            Dim lCnt As Integer
+            Dim aObjRow As Object
+            lCnt = 0
+            For Each aObjRow In pObjects
+                lCnt = lCnt + 1
+                oCoobject.Append()
+                oCoobject.SetValue("OBJECT_INDEX", lCnt)
+                If aObjRow.Costcenter <> "" Then
+                    oCoobject.SetValue("COSTCENTER", lSAPFormat.unpack(aObjRow.Costcenter, 10))
+                End If
+                If aObjRow.WBS_ELEMENT <> "" Then
+                    oCoobject.SetValue("WBS_ELEMENT", aObjRow.WBS_ELEMENT)
+                End If
+                If aObjRow.Acttype <> "" Then
+                    oCoobject.SetValue("ACTTYPE", aObjRow.Acttype)
+                    '      oCoobject.SetValue("ACTTYPE", lSAPFormat.unpack(aObjRow.Acttype, 6))
+                End If
+                oIndexstructure.Append()
+                oIndexstructure.SetValue("OBJECT_INDEX", lCnt)
+                oIndexstructure.SetValue("VALUE_INDEX", lCnt)
+                oPerValue.Append()
+                oPerValue.SetValue("VALUE_INDEX", lCnt)
+                oPerValue.SetValue("COST_ELEM", lSAPFormat.unpack(aObjRow.Costelem, 10))
+            Next aObjRow
+            ' call the BAPI
+            oRfcFunction.Invoke(destination)
+            If oRETURN.Count = 0 Then
+                ReadPrimCost = "Success"
+                For i As Integer = 0 To oPerValue.Count - 1
+                    pData.Add(oPerValue(i))
+                Next i
+            Else
+                For i As Integer = 0 To oRETURN.Count - 1
+                    ReadPrimCost = ReadPrimCost & ";" & oRETURN(i).GetValue("MESSAGE")
+                Next i
+            End If
+        Catch Ex As System.Exception
+            MsgBox("Error: Exception " & Ex.Message, MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "SAPCostActivityPlanning")
+            ReadPrimCost = "Error: Exception in ReadPrimCost"
+        Finally
+            RfcSessionManager.EndContext(destination)
+        End Try
+    End Function
+
     Public Function ReadPrimCostTot(pCoAre As String, pFiscy As String, pPfrom As String,
                              pPto As String, pVers As String, pCurt As String,
                              pObjects As Collection, pData As Collection) As String
@@ -152,6 +279,72 @@ Public Class SAPCostActivityPlanning
         End Try
     End Function
 
+    Public Function ReadActivityInput(pCoAre As String, pFiscy As String, pPfrom As String,
+                             pPto As String, pVers As String, pCurt As String,
+                             pObjects As Collection, pData As Collection) As String
+        ReadActivityInput = ""
+        Try
+            oRfcFunction = destination.Repository.CreateFunction("BAPI_COSTACTPLN_READACTINPUT")
+            RfcSessionManager.BeginContext(destination)
+            Dim lSAPFormat As New SAPFormat
+            Dim oHeaderinfo As IRfcStructure = oRfcFunction.GetStructure("HEADERINFO")
+            Dim oIndexstructure As IRfcTable = oRfcFunction.GetTable("INDEXSTRUCTURE")
+            Dim oCoobject As IRfcTable = oRfcFunction.GetTable("COOBJECT")
+            Dim oPerValue As IRfcTable = oRfcFunction.GetTable("PERVALUE")
+            Dim oRETURN As IRfcTable = oRfcFunction.GetTable("RETURN")
+            oHeaderinfo.SetValue("CO_AREA", pCoAre)
+            oHeaderinfo.SetValue("FISC_YEAR", pFiscy)
+            oHeaderinfo.SetValue("PERIOD_FROM", lSAPFormat.unpack(pPfrom, 3))
+            oHeaderinfo.SetValue("PERIOD_TO", lSAPFormat.unpack(pPto, 3))
+            oHeaderinfo.SetValue("VERSION", lSAPFormat.unpack(pVers, 3))
+            oHeaderinfo.SetValue("PLAN_CURRTYPE", pCurt)
+
+            Dim lCnt As Integer
+            Dim aObjRow As Object
+            lCnt = 0
+            For Each aObjRow In pObjects
+                lCnt = lCnt + 1
+                oCoobject.Append()
+                oCoobject.SetValue("OBJECT_INDEX", lCnt)
+                If aObjRow.Costcenter <> "" Then
+                    oCoobject.SetValue("COSTCENTER", lSAPFormat.unpack(aObjRow.Costcenter, 10))
+                End If
+                If aObjRow.WBS_ELEMENT <> "" Then
+                    oCoobject.SetValue("WBS_ELEMENT", aObjRow.WBS_ELEMENT)
+                End If
+                If aObjRow.Acttype <> "" Then
+                    oCoobject.SetValue("ACTTYPE", aObjRow.Acttype)
+                    '      oCoobject.SetValue("ACTTYPE", lSAPFormat.unpack(aObjRow.Acttype, 6))
+                End If
+                oIndexstructure.Append()
+                oIndexstructure.SetValue("OBJECT_INDEX", lCnt)
+                oIndexstructure.SetValue("VALUE_INDEX", lCnt)
+                oPerValue.Append()
+                oPerValue.SetValue("VALUE_INDEX", lCnt)
+                oPerValue.SetValue("SEND_CCTR", lSAPFormat.unpack(aObjRow.SCostcenter, 10))
+                oPerValue.SetValue("SEND_ACTIVITY", aObjRow.SActtype)
+            Next aObjRow
+            ' call the BAPI
+            oRfcFunction.Invoke(destination)
+            If oRETURN.Count = 0 Then
+                ReadActivityInput = "Success"
+                For i As Integer = 0 To oPerValue.Count - 1
+                    pData.Add(oPerValue(i))
+                Next i
+            Else
+                For i As Integer = 0 To oRETURN.Count - 1
+                    ReadActivityInput = ReadActivityInput & ";" & oRETURN(i).GetValue("MESSAGE")
+                Next i
+            End If
+        Catch Ex As System.Exception
+            MsgBox("Error: Exception " & Ex.Message, MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "SAPCostActivityPlanning")
+            ReadActivityInput = "Error: Exception in ReadActivityInput"
+        Finally
+            RfcSessionManager.EndContext(destination)
+        End Try
+    End Function
+
+
     Public Function ReadActivityInputTot(pCoAre As String, pFiscy As String, pPfrom As String,
                              pPto As String, pVers As String, pCurt As String,
                              pObjects As Collection, pData As Collection) As String
@@ -212,6 +405,78 @@ Public Class SAPCostActivityPlanning
         Catch Ex As System.Exception
             MsgBox("Error: Exception " & Ex.Message, MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "SAPCostActivityPlanning")
             ReadActivityInputTot = "Error: Exception in ReadActivityInputTot"
+        Finally
+            RfcSessionManager.EndContext(destination)
+        End Try
+    End Function
+
+    Public Function PostPrimCost(pCoAre As String, pFiscy As String, pPfrom As String,
+                             pPto As String, pVers As String, pCurt As String,
+                             pObjects As Collection, pData As Collection) As String
+        PostPrimCost = ""
+        Try
+            oRfcFunction = destination.Repository.CreateFunction("BAPI_COSTACTPLN_POSTPRIMCOST")
+            RfcSessionManager.BeginContext(destination)
+            Dim lSAPFormat As New SAPFormat
+            Dim oHeaderinfo As IRfcStructure = oRfcFunction.GetStructure("HEADERINFO")
+            Dim oIndexstructure As IRfcTable = oRfcFunction.GetTable("INDEXSTRUCTURE")
+            Dim oCoobject As IRfcTable = oRfcFunction.GetTable("COOBJECT")
+            Dim oPerValue As IRfcTable = oRfcFunction.GetTable("PERVALUE")
+            Dim oRETURN As IRfcTable = oRfcFunction.GetTable("RETURN")
+            oHeaderinfo.SetValue("CO_AREA", pCoAre)
+            oHeaderinfo.SetValue("FISC_YEAR", pFiscy)
+            oHeaderinfo.SetValue("PERIOD_FROM", lSAPFormat.unpack(pPfrom, 3))
+            oHeaderinfo.SetValue("PERIOD_TO", lSAPFormat.unpack(pPto, 3))
+            oHeaderinfo.SetValue("VERSION", lSAPFormat.unpack(pVers, 3))
+            oHeaderinfo.SetValue("PLAN_CURRTYPE", pCurt)
+
+            Dim lCnt As Integer
+            Dim aObjRow As Object
+            Dim aDataRow As Collection
+            lCnt = 0
+            For Each aObjRow In pObjects
+                lCnt = lCnt + 1
+                oCoobject.Append()
+                oCoobject.SetValue("OBJECT_INDEX", lCnt)
+                If aObjRow.Costcenter <> "" Then
+                    oCoobject.SetValue("COSTCENTER", lSAPFormat.unpack(aObjRow.Costcenter, 10))
+                End If
+                If aObjRow.WBS_ELEMENT <> "" Then
+                    oCoobject.SetValue("WBS_ELEMENT", aObjRow.WBS_ELEMENT)
+                End If
+                If aObjRow.Acttype <> "" Then
+                    oCoobject.SetValue("ACTTYPE", aObjRow.Acttype)
+                    '      oCoobject.SetValue("ACTTYPE", lSAPFormat.unpack(aObjRow.Acttype, 6))
+                End If
+                oIndexstructure.Append()
+                oIndexstructure.SetValue("OBJECT_INDEX", lCnt)
+                oIndexstructure.SetValue("VALUE_INDEX", lCnt)
+                oPerValue.Append()
+                oPerValue.SetValue("VALUE_INDEX", lCnt)
+                oPerValue.SetValue("COST_ELEM", lSAPFormat.unpack(aObjRow.Costelem, 10))
+                '   move the values from the data
+                aDataRow = pData(lCnt)
+                Dim J As Int32
+                Dim aDbl As Double
+                For J = 8 To 71
+                    aDbl = CDbl(aDataRow(J - 7))
+                    oPerValue.SetValue(J - 1, aDbl)  'Array start at 0, so 1 less then in SAP dictionary
+                Next J
+            Next aObjRow
+            ' call the BAPI
+            oRfcFunction.Invoke(destination)
+            If oRETURN.Count = 0 Then
+                PostPrimCost = "Success"
+                Dim aSAPBapiTranctionCommit As New SAPBapiTranctionCommit(sapcon)
+                aSAPBapiTranctionCommit.commit()
+            Else
+                For i As Integer = 0 To oRETURN.Count - 1
+                    PostPrimCost = PostPrimCost & ";" & oRETURN(i).GetValue("MESSAGE")
+                Next i
+            End If
+        Catch Ex As System.Exception
+            MsgBox("Error: Exception " & Ex.Message, MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "SAPCostActivityPlanning")
+            PostPrimCost = "Error: Exception in PostPrimCostTot"
         Finally
             RfcSessionManager.EndContext(destination)
         End Try
@@ -293,6 +558,86 @@ Public Class SAPCostActivityPlanning
         Catch Ex As System.Exception
             MsgBox("Error: Exception " & Ex.Message, MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "SAPCostActivityPlanning")
             PostPrimCostTot = "Error: Exception in PostPrimCostTot"
+        Finally
+            RfcSessionManager.EndContext(destination)
+        End Try
+    End Function
+
+    Public Function PostActivityOutput(pCoAre As String, pFiscy As String, pPfrom As String,
+                             pPto As String, pVers As String, pCurt As String,
+                             pObjects As Collection, pData As Collection) As String
+        Dim J As Int32
+        Dim aDbl As Double
+        Dim aInt As Int16
+        PostActivityOutput = ""
+        Try
+            oRfcFunction = destination.Repository.CreateFunction("BAPI_COSTACTPLN_POSTACTOUTPUT")
+            RfcSessionManager.BeginContext(destination)
+            Dim lSAPFormat As New SAPFormat
+            Dim oHeaderinfo As IRfcStructure = oRfcFunction.GetStructure("HEADERINFO")
+            Dim oIndexstructure As IRfcTable = oRfcFunction.GetTable("INDEXSTRUCTURE")
+            Dim oCoobject As IRfcTable = oRfcFunction.GetTable("COOBJECT")
+            Dim oPerValue As IRfcTable = oRfcFunction.GetTable("PERVALUE")
+            Dim oRETURN As IRfcTable = oRfcFunction.GetTable("RETURN")
+            oHeaderinfo.SetValue("CO_AREA", pCoAre)
+            oHeaderinfo.SetValue("FISC_YEAR", pFiscy)
+            oHeaderinfo.SetValue("PERIOD_FROM", lSAPFormat.unpack(pPfrom, 3))
+            oHeaderinfo.SetValue("PERIOD_TO", lSAPFormat.unpack(pPto, 3))
+            oHeaderinfo.SetValue("VERSION", lSAPFormat.unpack(pVers, 3))
+            oHeaderinfo.SetValue("PLAN_CURRTYPE", pCurt)
+
+            Dim lCnt As Integer
+            Dim aObjRow As Object
+            Dim aDataRow As Collection
+            lCnt = 0
+            For Each aObjRow In pObjects
+                lCnt = lCnt + 1
+                oCoobject.Append()
+                oCoobject.SetValue("OBJECT_INDEX", lCnt)
+                If aObjRow.Costcenter <> "" Then
+                    oCoobject.SetValue("COSTCENTER", lSAPFormat.unpack(aObjRow.Costcenter, 10))
+                End If
+                If aObjRow.WBS_ELEMENT <> "" Then
+                    oCoobject.SetValue("WBS_ELEMENT", aObjRow.WBS_ELEMENT)
+                End If
+                If aObjRow.Acttype <> "" Then
+                    oCoobject.SetValue("ACTTYPE", aObjRow.Acttype)
+                    '      oCoobject.SetValue("ACTTYPE", lSAPFormat.unpack(aObjRow.Acttype, 6))
+                End If
+                oIndexstructure.Append()
+                oIndexstructure.SetValue("OBJECT_INDEX", lCnt)
+                oIndexstructure.SetValue("VALUE_INDEX", lCnt)
+                oPerValue.Append()
+                oPerValue.SetValue("VALUE_INDEX", lCnt)
+                '   move the values from the data
+                aDataRow = pData(lCnt)
+
+                For J = 2 To 65
+                    aDbl = CDbl(aDataRow(J - 1))
+                    oPerValue.SetValue(J - 1, aDbl)        'Array start at 0, so 1 less then in SAP dictionary
+                Next J
+                For J = 66 To 97
+                    aInt = CInt(aDataRow(J - 1))
+                    oPerValue.SetValue(J - 1, aInt)        'Array start at 0, so 1 less then in SAP dictionary
+                Next J
+                oPerValue.SetValue("UNIT_OF_MEASURE", CStr(aDataRow(97)))
+                oPerValue.SetValue("CURRENCY", CStr(aDataRow(98)))
+            Next aObjRow
+
+            ' call the BAPI
+            oRfcFunction.Invoke(destination)
+            If oRETURN.Count = 0 Then
+                PostActivityOutput = "Success"
+                Dim aSAPBapiTranctionCommit As New SAPBapiTranctionCommit(sapcon)
+                aSAPBapiTranctionCommit.commit()
+            Else
+                For i As Integer = 0 To oRETURN.Count - 1
+                    PostActivityOutput = PostActivityOutput & ";" & oRETURN(i).GetValue("MESSAGE")
+                Next i
+            End If
+        Catch Ex As System.Exception
+            MsgBox("Error: Exception " & Ex.Message, MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "SAPCostActivityPlanning")
+            PostActivityOutput = "Error: Exception in PostActivityOutputTot"
         Finally
             RfcSessionManager.EndContext(destination)
         End Try
@@ -384,6 +729,80 @@ Public Class SAPCostActivityPlanning
         End Try
     End Function
 
+    Public Function PostActivityInput(pCoAre As String, pFiscy As String, pPfrom As String,
+                             pPto As String, pVers As String, pCurt As String,
+                             pObjects As Collection, pData As Collection) As String
+        PostActivityInput = ""
+        Try
+            oRfcFunction = destination.Repository.CreateFunction("BAPI_COSTACTPLN_POSTACTINPUT")
+            RfcSessionManager.BeginContext(destination)
+            Dim lSAPFormat As New SAPFormat
+            Dim oHeaderinfo As IRfcStructure = oRfcFunction.GetStructure("HEADERINFO")
+            Dim oIndexstructure As IRfcTable = oRfcFunction.GetTable("INDEXSTRUCTURE")
+            Dim oCoobject As IRfcTable = oRfcFunction.GetTable("COOBJECT")
+            Dim oPerValue As IRfcTable = oRfcFunction.GetTable("PERVALUE")
+            Dim oRETURN As IRfcTable = oRfcFunction.GetTable("RETURN")
+            oHeaderinfo.SetValue("CO_AREA", pCoAre)
+            oHeaderinfo.SetValue("FISC_YEAR", pFiscy)
+            oHeaderinfo.SetValue("PERIOD_FROM", lSAPFormat.unpack(pPfrom, 3))
+            oHeaderinfo.SetValue("PERIOD_TO", lSAPFormat.unpack(pPto, 3))
+            oHeaderinfo.SetValue("VERSION", lSAPFormat.unpack(pVers, 3))
+            oHeaderinfo.SetValue("PLAN_CURRTYPE", pCurt)
+
+            Dim lCnt As Integer
+            Dim aObjRow As Object
+            Dim aDataRow As Collection
+            lCnt = 0
+            For Each aObjRow In pObjects
+                lCnt = lCnt + 1
+                oCoobject.Append()
+                oCoobject.SetValue("OBJECT_INDEX", lCnt)
+                If aObjRow.Costcenter <> "" Then
+                    oCoobject.SetValue("COSTCENTER", lSAPFormat.unpack(aObjRow.Costcenter, 10))
+                End If
+                If aObjRow.WBS_ELEMENT <> "" Then
+                    oCoobject.SetValue("WBS_ELEMENT", aObjRow.WBS_ELEMENT)
+                End If
+                If aObjRow.Acttype <> "" Then
+                    oCoobject.SetValue("ACTTYPE", aObjRow.Acttype)
+                    '      oCoobject.SetValue("ACTTYPE", lSAPFormat.unpack(aObjRow.Acttype, 6))
+                End If
+                oIndexstructure.Append()
+                oIndexstructure.SetValue("OBJECT_INDEX", lCnt)
+                oIndexstructure.SetValue("VALUE_INDEX", lCnt)
+                oPerValue.Append()
+                oPerValue.SetValue("VALUE_INDEX", lCnt)
+                oPerValue.SetValue("SEND_CCTR", lSAPFormat.unpack(aObjRow.SCostcenter, 10))
+                oPerValue.SetValue("SEND_ACTIVITY", aObjRow.SActtype)
+                '   move the values from the data
+                aDataRow = pData(lCnt)
+                oPerValue.SetValue("UNIT_OF_MEASURE", CStr(aDataRow(1)))
+                Dim J As Int32
+                Dim aDbl As Double
+                For J = 6 To 37
+                    aDbl = CDbl(aDataRow(J - 4))
+                    oPerValue.SetValue(J - 1, aDbl)  'Array start at 0, so 1 less then in SAP dictionary
+                Next J
+            Next aObjRow
+            ' call the BAPI
+            oRfcFunction.Invoke(destination)
+            If oRETURN.Count = 0 Then
+                PostActivityInput = "Success"
+                Dim aSAPBapiTranctionCommit As New SAPBapiTranctionCommit(sapcon)
+                aSAPBapiTranctionCommit.commit()
+            Else
+                For i As Integer = 0 To oRETURN.Count - 1
+                    PostActivityInput = PostActivityInput & ";" & oRETURN(i).GetValue("MESSAGE")
+                Next i
+            End If
+        Catch Ex As System.Exception
+            MsgBox("Error: Exception " & Ex.Message, MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "SAPCostActivityPlanning")
+            PostActivityInput = "Error: Exception in PostActivityInput"
+        Finally
+            RfcSessionManager.EndContext(destination)
+        End Try
+    End Function
+
     Public Function PostActivityInputTot(pCoAre As String, pFiscy As String, pPfrom As String,
                              pPto As String, pVers As String, pCurt As String,
                              pObjects As Collection, pData As Collection) As String
@@ -456,7 +875,6 @@ Public Class SAPCostActivityPlanning
         End Try
     End Function
 
-
     Public Function PostKeyFigure(pCoAre As String, pFiscy As String, pPfrom As String,
                             pPto As String, pVers As String, pCurt As String,
                             pObjects As Collection, pData As Collection) As String
@@ -475,7 +893,6 @@ Public Class SAPCostActivityPlanning
             oHeaderinfo.SetValue("PERIOD_FROM", lSAPFormat.unpack(pPfrom, 3))
             oHeaderinfo.SetValue("PERIOD_TO", lSAPFormat.unpack(pPto, 3))
             oHeaderinfo.SetValue("VERSION", lSAPFormat.unpack(pVers, 3))
-            oHeaderinfo.SetValue("PLAN_CURRTYPE", pCurt)
 
             Dim lCnt As Integer
             Dim aObjRow As Object
@@ -502,7 +919,8 @@ Public Class SAPCostActivityPlanning
                 oPervalue.SetValue("VALUE_INDEX", lCnt)
                 '   move the values from the data
                 aDataRow = pData(lCnt)
-                oPervalue.SetValue("STATKEYFIG", lSAPFormat.unpack(aDataRow(1), 6))
+                oPervalue.SetValue("STATKEYFIG", lSAPFormat.unpack(aObjRow.STATKEYFIG, 6))
+                oPervalue.SetValue("UNIT_OF_MEASURE", CStr(aDataRow(1)))
                 oPervalue.SetValue("QUANTITY_PER01", CDbl(aDataRow(2)))
                 oPervalue.SetValue("QUANTITY_PER02", CDbl(aDataRow(3)))
                 oPervalue.SetValue("QUANTITY_PER03", CDbl(aDataRow(4)))
@@ -553,7 +971,6 @@ Public Class SAPCostActivityPlanning
             oHeaderinfo.SetValue("PERIOD_FROM", lSAPFormat.unpack(pPfrom, 3))
             oHeaderinfo.SetValue("PERIOD_TO", lSAPFormat.unpack(pPto, 3))
             oHeaderinfo.SetValue("VERSION", lSAPFormat.unpack(pVers, 3))
-            oHeaderinfo.SetValue("PLAN_CURRTYPE", pCurt)
 
             Dim lCnt As Integer
             Dim aObjRow As Object
@@ -577,6 +994,7 @@ Public Class SAPCostActivityPlanning
                 oIndexstructure.SetValue("VALUE_INDEX", lCnt)
                 oPervalue.Append()
                 oPervalue.SetValue("VALUE_INDEX", lCnt)
+                oPervalue.SetValue("STATKEYFIG", aObjRow.STATKEYFIG)
             Next aObjRow
             ' call the BAPI
             oRfcFunction.Invoke(destination)

@@ -4,7 +4,7 @@
 
 Imports SAP.Middleware.Connector
 
-Public Class SAPAcctngActivityAlloc
+Public Class SAPAcctngRepstPrimCosts
     Private oRfcFunction As IRfcFunction
     Private destination As RfcCustomDestination
     Private sapcon As SapCon
@@ -15,7 +15,7 @@ Public Class SAPAcctngActivityAlloc
             destination = aSapCon.getDestination()
             sapcon.checkCon()
         Catch ex As System.Exception
-            MsgBox("New failed! " & ex.Message, MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "SAPAcctngActivityAlloc")
+            MsgBox("New failed! " & ex.Message, MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "SAPAcctngRepstPrimCosts")
         End Try
     End Sub
 
@@ -23,9 +23,9 @@ Public Class SAPAcctngActivityAlloc
         post = ""
         Try
             If pTest Then
-                oRfcFunction = destination.Repository.CreateFunction("BAPI_ACC_ACTIVITY_ALLOC_CHECK")
+                oRfcFunction = destination.Repository.CreateFunction("BAPI_ACC_PRIMARY_COSTS_CHECK")
             Else
-                oRfcFunction = destination.Repository.CreateFunction("BAPI_ACC_ACTIVITY_ALLOC_POST")
+                oRfcFunction = destination.Repository.CreateFunction("BAPI_ACC_PRIMARY_COSTS_POST")
             End If
             RfcSessionManager.BeginContext(destination)
             Dim lSAPFormat As New SAPFormat
@@ -41,33 +41,23 @@ Public Class SAPAcctngActivityAlloc
             For Each lRow In pData
                 oDocItems.Append()
                 oDocItems.SetValue("SEND_CCTR", lSAPFormat.unpack(lRow.SEND_CCTR, 10))
-                oDocItems.SetValue("PERSON_NO", CInt(lRow.PERSON_NO))
-                oDocItems.SetValue("ACTTYPE", CStr(lRow.ACTTYPE))
-                oDocItems.SetValue("ACTVTY_QTY", CDbl(lRow.ACTVTY_QTY))
+                oDocItems.SetValue("SENACTTYPE", CStr(lRow.SENACTTYPE))
+                oDocItems.SetValue("SEN_ORDER", lSAPFormat.unpack(lRow.SEN_ORDER, 12))
+                oDocItems.SetValue("SEN_WBS_EL", CStr(lRow.SEN_WBS_EL))
+                oDocItems.SetValue("SEN_NETWRK", lSAPFormat.unpack(lRow.SEN_NETWRK, 12))
+                oDocItems.SetValue("SENOPERATN", lSAPFormat.unpack(lRow.SENOPERATN, 4))
+                oDocItems.SetValue("SEND_FUNCTION", CStr(lRow.SEND_FUNCTION))
+                oDocItems.SetValue("PERSON_NO", lSAPFormat.unpack(lRow.PERSON_NO, 8))
+                oDocItems.SetValue("COST_ELEM", lSAPFormat.unpack(lRow.COST_ELEM, 10))
+                oDocItems.SetValue("VALUE_TCUR", CDbl(lRow.VALUE_TCUR))
                 oDocItems.SetValue("SEG_TEXT", CStr(lRow.SEG_TEXT))
+                oDocItems.SetValue("REC_CCTR", lSAPFormat.unpack(lRow.REC_CCTR, 10))
+                oDocItems.SetValue("REC_ORDER", lSAPFormat.unpack(lRow.REC_ORDER, 12))
                 oDocItems.SetValue("REC_WBS_EL", CStr(lRow.REC_WBS_EL))
                 oDocItems.SetValue("REC_NETWRK", lSAPFormat.unpack(lRow.REC_NETWRK, 12))
                 oDocItems.SetValue("RECOPERATN", lSAPFormat.unpack(lRow.RECOPERATN, 4))
-                oDocItems.SetValue("REC_ORDER", lSAPFormat.unpack(lRow.REC_ORDER, 12))
-                oDocItems.SetValue("REC_CCTR", lSAPFormat.unpack(lRow.REC_CCTR, 10))
-                If CStr(lRow.REC_FUNCTION) <> "" Then
-                    oDocItems.SetValue("REC_FUNCTION", CStr(lRow.REC_FUNCTION))
-                End If
-                If CDbl(lRow.PRICE) <> 0 Then
-                    oDocItems.SetValue("PRICE", CDbl(lRow.PRICE))
-                End If
-                If CDbl(lRow.PRICE_FIX) <> 0 Then
-                    oDocItems.SetValue("PRICE_FIX", CDbl(lRow.PRICE_FIX))
-                End If
-                If CDbl(lRow.PRICE_VAR) <> 0 Then
-                    oDocItems.SetValue("PRICE_VAR", CDbl(lRow.PRICE_VAR))
-                End If
-                If CInt(lRow.PRICE_UNIT) <> 0 Then
-                    oDocItems.SetValue("PRICE_UNIT", CInt(lRow.PRICE_UNIT))
-                End If
-                If CStr(lRow.CURR) <> "" Then
-                    oDocItems.SetValue("CURRENCY", CStr(lRow.CURR))
-                End If
+                oDocItems.SetValue("REC_FUNCTION", CStr(lRow.REC_FUNCTION))
+                oDocItems.SetValue("TRANS_CURR", CStr(lRow.TRANS_CURR))
             Next
             ' call the BAPI
             oRfcFunction.Invoke(destination)
@@ -84,10 +74,12 @@ Public Class SAPAcctngActivityAlloc
                 aSAPBapiTranctionCommit.commit()
             End If
         Catch Ex As System.Exception
-            MsgBox("Error: Exception " & Ex.Message, MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "SAPAcctngActivityAlloc")
+            MsgBox("Error: Exception " & Ex.Message, MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "SAPAcctngRepstPrimCosts")
             post = "Error: Exception in post"
         Finally
             RfcSessionManager.EndContext(destination)
         End Try
+
     End Function
+
 End Class
