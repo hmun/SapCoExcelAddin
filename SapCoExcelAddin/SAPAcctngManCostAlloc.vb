@@ -4,7 +4,7 @@
 
 Imports SAP.Middleware.Connector
 
-Public Class SAPAcctngRepstPrimCosts
+Public Class SAPAcctngManCostAlloc
     Private oRfcFunction As IRfcFunction
     Private destination As RfcCustomDestination
     Private sapcon As SapCon
@@ -15,7 +15,7 @@ Public Class SAPAcctngRepstPrimCosts
             destination = aSapCon.getDestination()
             sapcon.checkCon()
         Catch ex As System.Exception
-            MsgBox("New failed! " & ex.Message, MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "SAPAcctngRepstPrimCosts")
+            MsgBox("New failed! " & ex.Message, MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "SAPAcctngManCostAlloc")
         End Try
     End Sub
 
@@ -23,9 +23,9 @@ Public Class SAPAcctngRepstPrimCosts
         post = ""
         Try
             If pTest Then
-                oRfcFunction = destination.Repository.CreateFunction("BAPI_ACC_PRIMARY_COSTS_CHECK")
+                oRfcFunction = destination.Repository.CreateFunction("BAPI_ACC_MANUAL_ALLOC_CHECK")
             Else
-                oRfcFunction = destination.Repository.CreateFunction("BAPI_ACC_PRIMARY_COSTS_POST")
+                oRfcFunction = destination.Repository.CreateFunction("BAPI_ACC_MANUAL_ALLOC_POST")
             End If
             RfcSessionManager.BeginContext(destination)
             Dim lSAPFormat As New SAPFormat
@@ -43,7 +43,6 @@ Public Class SAPAcctngRepstPrimCosts
             For Each lRow In pData
                 oDocItems.Append()
                 oDocItems.SetValue("SEND_CCTR", lSAPFormat.unpack(lRow.SEND_CCTR, 10))
-                oDocItems.SetValue("SENACTTYPE", CStr(lRow.SENACTTYPE))
                 oDocItems.SetValue("SEN_ORDER", lSAPFormat.unpack(lRow.SEN_ORDER, 12))
                 oDocItems.SetValue("SEN_WBS_EL", CStr(lRow.SEN_WBS_EL))
                 oDocItems.SetValue("SEN_NETWRK", lSAPFormat.unpack(lRow.SEN_NETWRK, 12))
@@ -76,7 +75,7 @@ Public Class SAPAcctngRepstPrimCosts
                 aSAPBapiTranctionCommit.commit()
             End If
         Catch Ex As System.Exception
-            MsgBox("Error: Exception " & Ex.Message, MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "SAPAcctngRepstPrimCosts")
+            MsgBox("Error: Exception " & Ex.Message, MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "SAPAcctngManCostAlloc")
             post = "Error: Exception in post"
         Finally
             RfcSessionManager.EndContext(destination)

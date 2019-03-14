@@ -19,11 +19,15 @@ Public Class SAPAcctngActivityItem
     Public PRICE_VAR As Double
     Public PRICE_UNIT As Integer
     Public CURR As String
+    Public VALUE_TOTAL As Double
+    Public VALUE_FIX As Double
+    Public VALUE_VAR As Double
 
     Public Function create(pSEND_CCTR As String, pPERSON_NO As String, pACTTYPE As String, pACTVTY_QTY As Double, pSEG_TEXT As String,
                             pREC_WBS_EL As String, pREC_NETWRK As String, pRECOPERATN As String, pREC_ORDER As String, pREC_CCTR As String,
                             pPRICE As Double, pPRICE_FIX As Double, pPRICE_VAR As Double, pPRICE_UNIT As Integer,
-                            pCURR As String, Optional ByVal pREC_FUNCTION As String = "") As SAPAcctngActivityItem
+                            pCURR As String, Optional ByVal pREC_FUNCTION As String = "",
+                            Optional ByVal pVALUE_TOTAL As Double = 0, Optional ByVal pVALUE_FIX As Double = 0, Optional ByVal pVALUE_VAR As Double = 0) As SAPAcctngActivityItem
         Dim aSAPAcctngActivityItem As New SAPAcctngActivityItem
         aSAPAcctngActivityItem.SEND_CCTR = pSEND_CCTR
         aSAPAcctngActivityItem.PERSON_NO = pPERSON_NO
@@ -41,6 +45,9 @@ Public Class SAPAcctngActivityItem
         aSAPAcctngActivityItem.PRICE_FIX = pPRICE_FIX
         aSAPAcctngActivityItem.PRICE_UNIT = pPRICE_UNIT
         aSAPAcctngActivityItem.CURR = pCURR
+        aSAPAcctngActivityItem.VALUE_TOTAL = pVALUE_TOTAL
+        aSAPAcctngActivityItem.VALUE_FIX = pVALUE_FIX
+        aSAPAcctngActivityItem.VALUE_VAR = pVALUE_VAR
         create = aSAPAcctngActivityItem
     End Function
 

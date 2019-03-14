@@ -32,12 +32,13 @@ Partial Class FormLogon
         Me.Label3 = New System.Windows.Forms.Label()
         Me.Language = New System.Windows.Forms.TextBox()
         Me.Label4 = New System.Windows.Forms.Label()
+        Me.Destination = New System.Windows.Forms.TextBox()
         Me.SuspendLayout()
         '
         'UserName
         '
         Me.UserName.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper
-        Me.UserName.Location = New System.Drawing.Point(72, 43)
+        Me.UserName.Location = New System.Drawing.Point(72, 59)
         Me.UserName.MaxLength = 12
         Me.UserName.Name = "UserName"
         Me.UserName.Size = New System.Drawing.Size(153, 20)
@@ -46,7 +47,7 @@ Partial Class FormLogon
         'Label1
         '
         Me.Label1.AutoSize = True
-        Me.Label1.Location = New System.Drawing.Point(13, 49)
+        Me.Label1.Location = New System.Drawing.Point(13, 63)
         Me.Label1.Name = "Label1"
         Me.Label1.Size = New System.Drawing.Size(29, 13)
         Me.Label1.TabIndex = 7
@@ -54,7 +55,7 @@ Partial Class FormLogon
         '
         'Password
         '
-        Me.Password.Location = New System.Drawing.Point(72, 70)
+        Me.Password.Location = New System.Drawing.Point(72, 86)
         Me.Password.Name = "Password"
         Me.Password.PasswordChar = Global.Microsoft.VisualBasic.ChrW(42)
         Me.Password.Size = New System.Drawing.Size(153, 20)
@@ -64,7 +65,7 @@ Partial Class FormLogon
         'Label2
         '
         Me.Label2.AutoSize = True
-        Me.Label2.Location = New System.Drawing.Point(13, 76)
+        Me.Label2.Location = New System.Drawing.Point(13, 89)
         Me.Label2.Name = "Label2"
         Me.Label2.Size = New System.Drawing.Size(53, 13)
         Me.Label2.TabIndex = 8
@@ -72,7 +73,7 @@ Partial Class FormLogon
         '
         'ButtonLogon
         '
-        Me.ButtonLogon.Location = New System.Drawing.Point(12, 129)
+        Me.ButtonLogon.Location = New System.Drawing.Point(12, 144)
         Me.ButtonLogon.Name = "ButtonLogon"
         Me.ButtonLogon.Size = New System.Drawing.Size(54, 25)
         Me.ButtonLogon.TabIndex = 4
@@ -81,7 +82,8 @@ Partial Class FormLogon
         '
         'ButtonCancel
         '
-        Me.ButtonCancel.Location = New System.Drawing.Point(72, 130)
+        Me.ButtonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel
+        Me.ButtonCancel.Location = New System.Drawing.Point(72, 144)
         Me.ButtonCancel.Name = "ButtonCancel"
         Me.ButtonCancel.Size = New System.Drawing.Size(54, 25)
         Me.ButtonCancel.TabIndex = 5
@@ -90,7 +92,7 @@ Partial Class FormLogon
         '
         'Client
         '
-        Me.Client.Location = New System.Drawing.Point(72, 17)
+        Me.Client.Location = New System.Drawing.Point(72, 33)
         Me.Client.MaxLength = 3
         Me.Client.Name = "Client"
         Me.Client.Size = New System.Drawing.Size(34, 20)
@@ -99,7 +101,7 @@ Partial Class FormLogon
         'Label3
         '
         Me.Label3.AutoSize = True
-        Me.Label3.Location = New System.Drawing.Point(13, 24)
+        Me.Label3.Location = New System.Drawing.Point(13, 36)
         Me.Label3.Name = "Label3"
         Me.Label3.Size = New System.Drawing.Size(33, 13)
         Me.Label3.TabIndex = 6
@@ -108,7 +110,7 @@ Partial Class FormLogon
         'Language
         '
         Me.Language.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper
-        Me.Language.Location = New System.Drawing.Point(72, 96)
+        Me.Language.Location = New System.Drawing.Point(72, 112)
         Me.Language.MaxLength = 2
         Me.Language.Name = "Language"
         Me.Language.Size = New System.Drawing.Size(34, 20)
@@ -117,17 +119,33 @@ Partial Class FormLogon
         'Label4
         '
         Me.Label4.AutoSize = True
-        Me.Label4.Location = New System.Drawing.Point(13, 103)
+        Me.Label4.Location = New System.Drawing.Point(13, 115)
         Me.Label4.Name = "Label4"
         Me.Label4.Size = New System.Drawing.Size(55, 13)
         Me.Label4.TabIndex = 9
         Me.Label4.Text = "Language"
         '
+        'Destination
+        '
+        Me.Destination.BackColor = System.Drawing.SystemColors.Control
+        Me.Destination.CharacterCasing = System.Windows.Forms.CharacterCasing.Upper
+        Me.Destination.Enabled = False
+        Me.Destination.Location = New System.Drawing.Point(15, 8)
+        Me.Destination.MaxLength = 12
+        Me.Destination.Name = "Destination"
+        Me.Destination.Size = New System.Drawing.Size(210, 20)
+        Me.Destination.TabIndex = 10
+        Me.Destination.TabStop = False
+        Me.Destination.TextAlign = System.Windows.Forms.HorizontalAlignment.Center
+        '
         'FormLogon
         '
+        Me.AcceptButton = Me.ButtonLogon
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-        Me.ClientSize = New System.Drawing.Size(244, 165)
+        Me.CancelButton = Me.ButtonCancel
+        Me.ClientSize = New System.Drawing.Size(244, 181)
+        Me.Controls.Add(Me.Destination)
         Me.Controls.Add(Me.Label4)
         Me.Controls.Add(Me.Language)
         Me.Controls.Add(Me.Label3)
@@ -155,4 +173,5 @@ Partial Class FormLogon
     Friend WithEvents Label3 As System.Windows.Forms.Label
     Friend WithEvents Language As System.Windows.Forms.TextBox
     Friend WithEvents Label4 As System.Windows.Forms.Label
+    Friend WithEvents Destination As System.Windows.Forms.TextBox
 End Class

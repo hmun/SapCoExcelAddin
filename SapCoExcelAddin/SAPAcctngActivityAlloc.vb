@@ -32,6 +32,8 @@ Public Class SAPAcctngActivityAlloc
             Dim oDocHeader As IRfcStructure = oRfcFunction.GetStructure("DOC_HEADER")
             Dim oDocItems As IRfcTable = oRfcFunction.GetTable("DOC_ITEMS")
             Dim oRETURN As IRfcTable = oRfcFunction.GetTable("RETURN")
+            oDocItems.Clear()
+            oRETURN.Clear()
             oDocHeader.SetValue("CO_AREA", pKokrs)
             oDocHeader.SetValue("DOCDATE", pBldat)
             oDocHeader.SetValue("POSTGDATE", pBuDat)
@@ -43,7 +45,7 @@ Public Class SAPAcctngActivityAlloc
                 oDocItems.SetValue("SEND_CCTR", lSAPFormat.unpack(lRow.SEND_CCTR, 10))
                 oDocItems.SetValue("PERSON_NO", CInt(lRow.PERSON_NO))
                 oDocItems.SetValue("ACTTYPE", CStr(lRow.ACTTYPE))
-                oDocItems.SetValue("ACTVTY_QTY", CDbl(lRow.ACTVTY_QTY))
+                oDocItems.SetValue("ACTVTY_QTY", Decimal.Round(CDec(lRow.ACTVTY_QTY), 3))
                 oDocItems.SetValue("SEG_TEXT", CStr(lRow.SEG_TEXT))
                 oDocItems.SetValue("REC_WBS_EL", CStr(lRow.REC_WBS_EL))
                 oDocItems.SetValue("REC_NETWRK", lSAPFormat.unpack(lRow.REC_NETWRK, 12))
@@ -53,20 +55,29 @@ Public Class SAPAcctngActivityAlloc
                 If CStr(lRow.REC_FUNCTION) <> "" Then
                     oDocItems.SetValue("REC_FUNCTION", CStr(lRow.REC_FUNCTION))
                 End If
-                If CDbl(lRow.PRICE) <> 0 Then
-                    oDocItems.SetValue("PRICE", CDbl(lRow.PRICE))
+                If CDec(lRow.PRICE) <> 0 Then
+                    oDocItems.SetValue("PRICE", Decimal.Round(CDec(lRow.PRICE), 2))
                 End If
-                If CDbl(lRow.PRICE_FIX) <> 0 Then
-                    oDocItems.SetValue("PRICE_FIX", CDbl(lRow.PRICE_FIX))
+                If CDec(lRow.PRICE_FIX) <> 0 Then
+                    oDocItems.SetValue("PRICE_FIX", Decimal.Round(CDec(lRow.PRICE_FIX), 2))
                 End If
-                If CDbl(lRow.PRICE_VAR) <> 0 Then
-                    oDocItems.SetValue("PRICE_VAR", CDbl(lRow.PRICE_VAR))
+                If CDec(lRow.PRICE_VAR) <> 0 Then
+                    oDocItems.SetValue("PRICE_VAR", Decimal.Round(CDec(lRow.PRICE_VAR), 2))
                 End If
                 If CInt(lRow.PRICE_UNIT) <> 0 Then
                     oDocItems.SetValue("PRICE_UNIT", CInt(lRow.PRICE_UNIT))
                 End If
                 If CStr(lRow.CURR) <> "" Then
                     oDocItems.SetValue("CURRENCY", CStr(lRow.CURR))
+                End If
+                If lRow.VALUE_TOTAL <> 0 Then
+                    oDocItems.SetValue("VALUE_TOTAL", Decimal.Round(CDec(lRow.VALUE_TOTAL), 2))
+                End If
+                If lRow.VALUE_FIX <> 0 Then
+                    oDocItems.SetValue("VALUE_FIX", Decimal.Round(CDec(lRow.VALUE_FIX), 2))
+                End If
+                If lRow.VALUE_VAR <> 0 Then
+                    oDocItems.SetValue("VALUE_VAR", Decimal.Round(CDec(lRow.VALUE_VAR), 2))
                 End If
             Next
             ' call the BAPI

@@ -1,4 +1,4 @@
-﻿' Copyright 2017 Hermann Mundprecht
+﻿' Copyright 2016-2019 Hermann Mundprecht
 ' This file is licensed under the terms of the license 'CC BY 4.0'. 
 ' For a human readable version of the license, see https://creativecommons.org/licenses/by/4.0/
 
@@ -42,8 +42,8 @@ Public Class SapInMemoryDestinationConfiguration
         '' Replace the current parameters of an existing destination or add a new one
         availableDestinations(name) = parameters
         Dim tmp As String = "Application server"
-        Dim isLoadValancing As Boolean = parameters.TryGetValue(RfcConfigParameters.LogonGroup, tmp)
-        If isLoadValancing Then
+        Dim isLoadBalancing As Boolean = parameters.TryGetValue(RfcConfigParameters.LogonGroup, tmp)
+        If isLoadBalancing Then
             tmp = "Load balancing"
         End If
     End Sub
@@ -61,5 +61,9 @@ Public Class SapInMemoryDestinationConfiguration
             Console.WriteLine("The destination could not be removed since it does not exist")
         End If
     End Sub
+
+    Public Function getAvailableDestinations() As Dictionary(Of String, RfcConfigParameters)
+        getAvailableDestinations = availableDestinations
+    End Function
 
 End Class

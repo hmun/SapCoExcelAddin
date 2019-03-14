@@ -14,4 +14,11 @@ Public Class SAPFormat
         End If
     End Function
 
+    Public Function pspid(val As String, length As Integer) As String
+        Dim ZeroStr As String
+        ZeroStr = "000000000000000000000000000000"
+        val = Replace(val, ".", "")
+        pspid = val & Left(ZeroStr, length - Len(val))
+    End Function
+
 End Class

@@ -32,10 +32,10 @@
     </StartupObject>
     <IsWebBootstrapper>False</IsWebBootstrapper>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <PublishUrl>D:\VS_WS\SapCoExcelAddin_publish_64\</PublishUrl>
+    <PublishUrl>T:\hmun\VbaGit_64\SapCoExcelAddin\x86\</PublishUrl>
     <InstallUrl />
     <TargetCulture>en</TargetCulture>
-    <ApplicationVersion>1.0.1.1</ApplicationVersion>
+    <ApplicationVersion>1.0.3.3</ApplicationVersion>
     <AutoIncrementApplicationRevision>true</AutoIncrementApplicationRevision>
     <UpdateEnabled>true</UpdateEnabled>
     <UpdateInterval>7</UpdateInterval>
@@ -142,11 +142,11 @@
   -->
   <ItemGroup>
     <Reference Include="Accessibility" />
-    <Reference Include="sapnco">
-      <HintPath>C:\Program Files\SAP\SAP_DotNetConnector3_Net40_x64\sapnco.dll</HintPath>
+    <Reference Include="sapnco-x86">
+      <HintPath>C:\Program Files (x86)\SAP\SAP_DotNetConnector3_Net40_x86\sapnco-x86.dll</HintPath>
     </Reference>
-    <Reference Include="sapnco_utils">
-      <HintPath>C:\Program Files\SAP\SAP_DotNetConnector3_Net40_x64\sapnco_utils.dll</HintPath>
+    <Reference Include="sapnco_utils-x86">
+      <HintPath>C:\Program Files (x86)\SAP\SAP_DotNetConnector3_Net40_x86\sapnco_utils-x86.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -206,7 +206,17 @@
   -->
   <ItemGroup>
     <AppDesigner Include="My Project\" />
+    <Compile Include="SAPCOPAActuals.vb" />
+    <Compile Include="SAPCOPAItem.vb" />
+    <Compile Include="SAPProjectDefinition.vb" />
+    <Compile Include="ConParameters.vb" />
     <Compile Include="DateFormatString.vb" />
+    <Compile Include="FormDestinations.Designer.vb">
+      <DependentUpon>FormDestinations.vb</DependentUpon>
+    </Compile>
+    <Compile Include="FormDestinations.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="FormLogon.Designer.vb">
       <DependentUpon>FormLogon.vb</DependentUpon>
     </Compile>
@@ -214,6 +224,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="SAPAcctngActivityAlloc.vb" />
+    <Compile Include="SAPAcctngManCostAlloc.vb" />
     <Compile Include="SAPAcctngPrimCostsItem.vb" />
     <Compile Include="SAPAcctngActivityItem.vb" />
     <Compile Include="SAPAcctngRepstPrimCosts.vb" />
@@ -226,21 +237,25 @@
     <Compile Include="SapCoRibbon.vb">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="SAPCostActivityPlanning.vb" />
     <Compile Include="SapExcelDestinationConfiguration.vb" />
     <Compile Include="SAPFormat.vb" />
     <Compile Include="SapGeneral.vb" />
-    <Compile Include="SAPGetCOObject.vb" />
     <Compile Include="SapInMemoryDestinationConfiguration.vb" />
     <Compile Include="SapCoExcelAddin.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="SAPWbsElement.vb" />
+    <Compile Include="SAPZ_BC_EXCEL_ADDIN_VERS_CHK.vb" />
+    <Compile Include="TField.vb" />
     <EmbeddedResource Include="FormLogon.resx">
       <DependentUpon>FormLogon.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="SapCoRibbon.resx">
       <DependentUpon>SapCoRibbon.vb</DependentUpon>
     </EmbeddedResource>
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="SapCoExcelAddin.Designer.xml">
       <DependentUpon>SapCoExcelAddin.vb</DependentUpon>
     </None>
@@ -313,7 +328,29 @@
     </ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>27561C5151A05B7F5BD7BCEC9B71E57DE3398173</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>0A36EF37D8F9851B6897205D8780AE0F66A018ED</ManifestCertificateThumbprint>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <DefineDebug>true</DefineDebug>
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>VSTO40</DefineConstants>
+    <DocumentationFile>SapCoExcelAddin.xml</DocumentationFile>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <DefineTrace>true</DefineTrace>
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DocumentationFile>SapCoExcelAddin.xml</DocumentationFile>
+    <Optimize>true</Optimize>
+    <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <!-- Include the build rules for a Visual Basic project. -->
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />

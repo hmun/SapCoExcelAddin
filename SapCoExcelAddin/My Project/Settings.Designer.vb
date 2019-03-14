@@ -19,7 +19,7 @@ Option Explicit On
 Partial Friend NotInheritable Class MySettings
     Inherits Global.System.Configuration.ApplicationSettingsBase
     
-    Private Shared defaultInstance As MySettings = CType(Global.System.Configuration.ApplicationSettingsBase.Synchronized(New MySettings()), MySettings)
+    Private Shared defaultInstance As MySettings = CType(Global.System.Configuration.ApplicationSettingsBase.Synchronized(New MySettings()),MySettings)
     
 #Region "My.Settings Auto-Save Functionality"
 #If _MyType = "WindowsForms" Then
@@ -51,6 +51,30 @@ Partial Friend NotInheritable Class MySettings
 #End If
             Return defaultInstance
         End Get
+    End Property
+    
+    <Global.System.Configuration.UserScopedSettingAttribute(),  _
+     Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+     Global.System.Configuration.DefaultSettingValueAttribute("")>  _
+    Public Property SAP_Language() As String
+        Get
+            Return CType(Me("SAP_Language"),String)
+        End Get
+        Set
+            Me("SAP_Language") = value
+        End Set
+    End Property
+    
+    <Global.System.Configuration.UserScopedSettingAttribute(),  _
+     Global.System.Diagnostics.DebuggerNonUserCodeAttribute(),  _
+     Global.System.Configuration.DefaultSettingValueAttribute("")>  _
+    Public Property SAP_User() As String
+        Get
+            Return CType(Me("SAP_User"),String)
+        End Get
+        Set
+            Me("SAP_User") = value
+        End Set
     End Property
 End Class
 
