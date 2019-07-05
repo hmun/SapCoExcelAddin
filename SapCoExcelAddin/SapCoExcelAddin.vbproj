@@ -142,11 +142,11 @@
   -->
   <ItemGroup>
     <Reference Include="Accessibility" />
-    <Reference Include="sapnco-x86">
-      <HintPath>C:\Program Files (x86)\SAP\SAP_DotNetConnector3_Net40_x86\sapnco-x86.dll</HintPath>
+    <Reference Include="sapnco">
+      <HintPath>C:\Program Files\SAP\SAP_DotNetConnector3_Net40_x64\sapnco.dll</HintPath>
     </Reference>
-    <Reference Include="sapnco_utils-x86">
-      <HintPath>C:\Program Files (x86)\SAP\SAP_DotNetConnector3_Net40_x86\sapnco_utils-x86.dll</HintPath>
+    <Reference Include="sapnco_utils">
+      <HintPath>C:\Program Files\SAP\SAP_DotNetConnector3_Net40_x64\sapnco_utils.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -256,6 +256,7 @@
     <None Include="app.config">
       <SubType>Designer</SubType>
     </None>
+    <None Include="hmun.snk" />
     <None Include="SapCoExcelAddin.Designer.xml">
       <DependentUpon>SapCoExcelAddin.vb</DependentUpon>
     </None>
@@ -351,6 +352,12 @@
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x86</PlatformTarget>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>hmun.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <!-- Include the build rules for a Visual Basic project. -->
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
