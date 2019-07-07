@@ -6,7 +6,7 @@ Imports System.Reflection
 Imports System.Diagnostics
 
 Public Class SapGeneral
-    Const cVersion As String = "1.0.3.0"
+    Const cVersion As String = "1.0.3.4"
 
     Public Function checkVersion() As Integer
         Dim aCws As Excel.Worksheet

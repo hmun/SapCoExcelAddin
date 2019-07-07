@@ -41,6 +41,7 @@
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()> _
     Private Sub InitializeComponent()
+        Dim resources As System.ComponentModel.ComponentResourceManager = New System.ComponentModel.ComponentResourceManager(GetType(SapCoRibbon))
         Me.SapCo = Me.Factory.CreateRibbonTab
         Me.SAPActivityAlloc = Me.Factory.CreateRibbonGroup
         Me.ButtonActivityAllocCheck = Me.Factory.CreateRibbonButton
@@ -48,21 +49,21 @@
         Me.SAPRepstPrimCosts = Me.Factory.CreateRibbonGroup
         Me.ButtonRepstPrimCostsCheck = Me.Factory.CreateRibbonButton
         Me.ButtonRepstPrimCostsPost = Me.Factory.CreateRibbonButton
+        Me.SAPManCostAlloc = Me.Factory.CreateRibbonGroup
+        Me.ButtonManCostAllocCheck = Me.Factory.CreateRibbonButton
+        Me.ButtonManCostAllocPost = Me.Factory.CreateRibbonButton
         Me.SAPCOPAActuals = Me.Factory.CreateRibbonGroup
         Me.ButtonCheckCostingBasedData = Me.Factory.CreateRibbonButton
         Me.ButtonPostCostingBasedData = Me.Factory.CreateRibbonButton
         Me.SAPCoLogon = Me.Factory.CreateRibbonGroup
         Me.ButtonLogon = Me.Factory.CreateRibbonButton
         Me.ButtonLogoff = Me.Factory.CreateRibbonButton
-        Me.SAPManCostAlloc = Me.Factory.CreateRibbonGroup
-        Me.ButtonManCostAllocCheck = Me.Factory.CreateRibbonButton
-        Me.ButtonManCostAllocPost = Me.Factory.CreateRibbonButton
         Me.SapCo.SuspendLayout()
         Me.SAPActivityAlloc.SuspendLayout()
         Me.SAPRepstPrimCosts.SuspendLayout()
+        Me.SAPManCostAlloc.SuspendLayout()
         Me.SAPCOPAActuals.SuspendLayout()
         Me.SAPCoLogon.SuspendLayout()
-        Me.SAPManCostAlloc.SuspendLayout()
         Me.SuspendLayout()
         '
         'SapCo
@@ -84,15 +85,19 @@
         '
         'ButtonActivityAllocCheck
         '
+        Me.ButtonActivityAllocCheck.Image = CType(resources.GetObject("ButtonActivityAllocCheck.Image"), System.Drawing.Image)
         Me.ButtonActivityAllocCheck.Label = "ActivityAlloc Check"
         Me.ButtonActivityAllocCheck.Name = "ButtonActivityAllocCheck"
         Me.ButtonActivityAllocCheck.ScreenTip = "Check Activity Allocation Document"
+        Me.ButtonActivityAllocCheck.ShowImage = True
         '
         'ButtonActivityAllocPost
         '
+        Me.ButtonActivityAllocPost.Image = CType(resources.GetObject("ButtonActivityAllocPost.Image"), System.Drawing.Image)
         Me.ButtonActivityAllocPost.Label = "ActivityAlloc Post"
         Me.ButtonActivityAllocPost.Name = "ButtonActivityAllocPost"
         Me.ButtonActivityAllocPost.ScreenTip = "Post Activity Allocation Document"
+        Me.ButtonActivityAllocPost.ShowImage = True
         '
         'SAPRepstPrimCosts
         '
@@ -103,51 +108,19 @@
         '
         'ButtonRepstPrimCostsCheck
         '
+        Me.ButtonRepstPrimCostsCheck.Image = CType(resources.GetObject("ButtonRepstPrimCostsCheck.Image"), System.Drawing.Image)
         Me.ButtonRepstPrimCostsCheck.Label = "RepstPrimCosts Check"
         Me.ButtonRepstPrimCostsCheck.Name = "ButtonRepstPrimCostsCheck"
         Me.ButtonRepstPrimCostsCheck.ScreenTip = "Check Repost Primary Costs Document"
+        Me.ButtonRepstPrimCostsCheck.ShowImage = True
         '
         'ButtonRepstPrimCostsPost
         '
+        Me.ButtonRepstPrimCostsPost.Image = CType(resources.GetObject("ButtonRepstPrimCostsPost.Image"), System.Drawing.Image)
         Me.ButtonRepstPrimCostsPost.Label = "RepstPrimCosts Post"
         Me.ButtonRepstPrimCostsPost.Name = "ButtonRepstPrimCostsPost"
         Me.ButtonRepstPrimCostsPost.ScreenTip = "Post Repost Primary Costs Document"
-        '
-        'SAPCOPAActuals
-        '
-        Me.SAPCOPAActuals.Items.Add(Me.ButtonCheckCostingBasedData)
-        Me.SAPCOPAActuals.Items.Add(Me.ButtonPostCostingBasedData)
-        Me.SAPCOPAActuals.Label = "CO-PA Actuals"
-        Me.SAPCOPAActuals.Name = "SAPCOPAActuals"
-        '
-        'ButtonCheckCostingBasedData
-        '
-        Me.ButtonCheckCostingBasedData.Label = "CostingBasedData Check"
-        Me.ButtonCheckCostingBasedData.Name = "ButtonCheckCostingBasedData"
-        Me.ButtonCheckCostingBasedData.ScreenTip = "Check posting of costing based data"
-        '
-        'ButtonPostCostingBasedData
-        '
-        Me.ButtonPostCostingBasedData.Label = "CostingBasedData Post"
-        Me.ButtonPostCostingBasedData.Name = "ButtonPostCostingBasedData"
-        Me.ButtonPostCostingBasedData.ScreenTip = "Post costing based data"
-        '
-        'SAPCoLogon
-        '
-        Me.SAPCoLogon.Items.Add(Me.ButtonLogon)
-        Me.SAPCoLogon.Items.Add(Me.ButtonLogoff)
-        Me.SAPCoLogon.Label = "Logon"
-        Me.SAPCoLogon.Name = "SAPCoLogon"
-        '
-        'ButtonLogon
-        '
-        Me.ButtonLogon.Label = "SAP Logon"
-        Me.ButtonLogon.Name = "ButtonLogon"
-        '
-        'ButtonLogoff
-        '
-        Me.ButtonLogoff.Label = "SAP Logoff"
-        Me.ButtonLogoff.Name = "ButtonLogoff"
+        Me.ButtonRepstPrimCostsPost.ShowImage = True
         '
         'SAPManCostAlloc
         '
@@ -158,15 +131,63 @@
         '
         'ButtonManCostAllocCheck
         '
+        Me.ButtonManCostAllocCheck.Image = CType(resources.GetObject("ButtonManCostAllocCheck.Image"), System.Drawing.Image)
         Me.ButtonManCostAllocCheck.Label = "ManCostAlloc Check"
         Me.ButtonManCostAllocCheck.Name = "ButtonManCostAllocCheck"
         Me.ButtonManCostAllocCheck.ScreenTip = "Check Manual Cost Allocation"
+        Me.ButtonManCostAllocCheck.ShowImage = True
         '
         'ButtonManCostAllocPost
         '
+        Me.ButtonManCostAllocPost.Image = CType(resources.GetObject("ButtonManCostAllocPost.Image"), System.Drawing.Image)
         Me.ButtonManCostAllocPost.Label = "ManCostAlloc Post"
         Me.ButtonManCostAllocPost.Name = "ButtonManCostAllocPost"
         Me.ButtonManCostAllocPost.ScreenTip = "Post Manual Cost Allocation"
+        Me.ButtonManCostAllocPost.ShowImage = True
+        '
+        'SAPCOPAActuals
+        '
+        Me.SAPCOPAActuals.Items.Add(Me.ButtonCheckCostingBasedData)
+        Me.SAPCOPAActuals.Items.Add(Me.ButtonPostCostingBasedData)
+        Me.SAPCOPAActuals.Label = "CO-PA Actuals"
+        Me.SAPCOPAActuals.Name = "SAPCOPAActuals"
+        '
+        'ButtonCheckCostingBasedData
+        '
+        Me.ButtonCheckCostingBasedData.Image = CType(resources.GetObject("ButtonCheckCostingBasedData.Image"), System.Drawing.Image)
+        Me.ButtonCheckCostingBasedData.Label = "CostingBasedData Check"
+        Me.ButtonCheckCostingBasedData.Name = "ButtonCheckCostingBasedData"
+        Me.ButtonCheckCostingBasedData.ScreenTip = "Check posting of costing based data"
+        Me.ButtonCheckCostingBasedData.ShowImage = True
+        '
+        'ButtonPostCostingBasedData
+        '
+        Me.ButtonPostCostingBasedData.Image = CType(resources.GetObject("ButtonPostCostingBasedData.Image"), System.Drawing.Image)
+        Me.ButtonPostCostingBasedData.Label = "CostingBasedData Post"
+        Me.ButtonPostCostingBasedData.Name = "ButtonPostCostingBasedData"
+        Me.ButtonPostCostingBasedData.ScreenTip = "Post costing based data"
+        Me.ButtonPostCostingBasedData.ShowImage = True
+        '
+        'SAPCoLogon
+        '
+        Me.SAPCoLogon.Items.Add(Me.ButtonLogon)
+        Me.SAPCoLogon.Items.Add(Me.ButtonLogoff)
+        Me.SAPCoLogon.Label = "Logon"
+        Me.SAPCoLogon.Name = "SAPCoLogon"
+        '
+        'ButtonLogon
+        '
+        Me.ButtonLogon.Image = CType(resources.GetObject("ButtonLogon.Image"), System.Drawing.Image)
+        Me.ButtonLogon.Label = "SAP Logon"
+        Me.ButtonLogon.Name = "ButtonLogon"
+        Me.ButtonLogon.ShowImage = True
+        '
+        'ButtonLogoff
+        '
+        Me.ButtonLogoff.Image = CType(resources.GetObject("ButtonLogoff.Image"), System.Drawing.Image)
+        Me.ButtonLogoff.Label = "SAP Logoff"
+        Me.ButtonLogoff.Name = "ButtonLogoff"
+        Me.ButtonLogoff.ShowImage = True
         '
         'SapCoRibbon
         '
@@ -179,12 +200,12 @@
         Me.SAPActivityAlloc.PerformLayout()
         Me.SAPRepstPrimCosts.ResumeLayout(False)
         Me.SAPRepstPrimCosts.PerformLayout()
+        Me.SAPManCostAlloc.ResumeLayout(False)
+        Me.SAPManCostAlloc.PerformLayout()
         Me.SAPCOPAActuals.ResumeLayout(False)
         Me.SAPCOPAActuals.PerformLayout()
         Me.SAPCoLogon.ResumeLayout(False)
         Me.SAPCoLogon.PerformLayout()
-        Me.SAPManCostAlloc.ResumeLayout(False)
-        Me.SAPManCostAlloc.PerformLayout()
         Me.ResumeLayout(False)
 
     End Sub

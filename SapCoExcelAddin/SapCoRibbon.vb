@@ -165,6 +165,9 @@ Public Class SapCoRibbon
         End Try
         aRetStr = ""
         aDws.Activate()
+        Globals.SapCoExcelAddin.Application.Cursor = Microsoft.Office.Interop.Excel.XlMousePointer.xlWait
+        Globals.SapCoExcelAddin.Application.EnableEvents = False
+        Globals.SapCoExcelAddin.Application.ScreenUpdating = False
         Dim aBUDAT As String
         Dim aBLDAT As String
         Dim aCells As Excel.Range
@@ -215,7 +218,13 @@ Public Class SapCoRibbon
                 aCells = aDws.Range(aDws.Cells(aPostLine + 1, AI_CM), aDws.Cells(i - 1, AI_CM))
                 aCells.Value = aRetStr
             End If
+            Globals.SapCoExcelAddin.Application.EnableEvents = True
+            Globals.SapCoExcelAddin.Application.ScreenUpdating = True
+            Globals.SapCoExcelAddin.Application.Cursor = Microsoft.Office.Interop.Excel.XlMousePointer.xlDefault
         Catch Ex As System.Exception
+            Globals.SapCoExcelAddin.Application.EnableEvents = True
+            Globals.SapCoExcelAddin.Application.ScreenUpdating = True
+            Globals.SapCoExcelAddin.Application.Cursor = Microsoft.Office.Interop.Excel.XlMousePointer.xlDefault
             MsgBox("Error: Exception " & Ex.Message, MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "SAP_ActivityAlloc_execute")
         End Try
 
@@ -321,6 +330,9 @@ Public Class SapCoRibbon
         End Try
         aRetStr = ""
         aDws.Activate()
+        Globals.SapCoExcelAddin.Application.Cursor = Microsoft.Office.Interop.Excel.XlMousePointer.xlWait
+        Globals.SapCoExcelAddin.Application.EnableEvents = False
+        Globals.SapCoExcelAddin.Application.ScreenUpdating = False
         Dim aBUDAT As String
         Dim aBLDAT As String
         Dim aCells As Excel.Range
@@ -366,7 +378,13 @@ Public Class SapCoRibbon
                 aCells = aDws.Range(aDws.Cells(aPostLine + 1, PC_CM), aDws.Cells(i - 1, PC_CM))
                 aCells.Value = aRetStr
             End If
+            Globals.SapCoExcelAddin.Application.EnableEvents = True
+            Globals.SapCoExcelAddin.Application.ScreenUpdating = True
+            Globals.SapCoExcelAddin.Application.Cursor = Microsoft.Office.Interop.Excel.XlMousePointer.xlDefault
         Catch Ex As System.Exception
+            Globals.SapCoExcelAddin.Application.EnableEvents = True
+            Globals.SapCoExcelAddin.Application.ScreenUpdating = True
+            Globals.SapCoExcelAddin.Application.Cursor = Microsoft.Office.Interop.Excel.XlMousePointer.xlDefault
             MsgBox("Error: Exception " & Ex.Message, MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "SAP_RepstPrimCosts_execute")
         End Try
     End Sub
@@ -471,6 +489,9 @@ Public Class SapCoRibbon
         End Try
         aRetStr = ""
         aDws.Activate()
+        Globals.SapCoExcelAddin.Application.Cursor = Microsoft.Office.Interop.Excel.XlMousePointer.xlWait
+        Globals.SapCoExcelAddin.Application.EnableEvents = False
+        Globals.SapCoExcelAddin.Application.ScreenUpdating = False
         Dim aBUDAT As String
         Dim aBLDAT As String
         Dim aCells As Excel.Range
@@ -517,7 +538,13 @@ Public Class SapCoRibbon
                 aCells = aDws.Range(aDws.Cells(aPostLine + 1, MC_CM), aDws.Cells(i - 1, MC_CM))
                 aCells.Value = aRetStr
             End If
+            Globals.SapCoExcelAddin.Application.EnableEvents = True
+            Globals.SapCoExcelAddin.Application.ScreenUpdating = True
+            Globals.SapCoExcelAddin.Application.Cursor = Microsoft.Office.Interop.Excel.XlMousePointer.xlDefault
         Catch Ex As System.Exception
+            Globals.SapCoExcelAddin.Application.EnableEvents = True
+            Globals.SapCoExcelAddin.Application.ScreenUpdating = True
+            Globals.SapCoExcelAddin.Application.Cursor = Microsoft.Office.Interop.Excel.XlMousePointer.xlDefault
             MsgBox("Error: Exception " & Ex.Message, MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "SAP_ManCostAlloc_execute")
         End Try
     End Sub
@@ -636,6 +663,9 @@ Public Class SapCoRibbon
         End Try
         ' Read the Items
         aDws.Activate()
+        Globals.SapCoExcelAddin.Application.Cursor = Microsoft.Office.Interop.Excel.XlMousePointer.xlWait
+        Globals.SapCoExcelAddin.Application.EnableEvents = False
+        Globals.SapCoExcelAddin.Application.ScreenUpdating = False
         i = 5
         ' determine the last column
         maxJ = 1
@@ -728,6 +758,9 @@ Public Class SapCoRibbon
             aCells = aDws.Range(aDws.Cells(aStartLine, j), aDws.Cells(aEndLine, j))
             aCells.Value = aRetStr
         End If
+        Globals.SapCoExcelAddin.Application.EnableEvents = True
+        Globals.SapCoExcelAddin.Application.ScreenUpdating = True
+        Globals.SapCoExcelAddin.Application.Cursor = Microsoft.Office.Interop.Excel.XlMousePointer.xlDefault
     End Sub
 
 End Class
