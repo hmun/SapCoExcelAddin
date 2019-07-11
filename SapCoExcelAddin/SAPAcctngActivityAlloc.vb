@@ -37,7 +37,11 @@ Public Class SAPAcctngActivityAlloc
             oDocHeader.SetValue("CO_AREA", pKokrs)
             oDocHeader.SetValue("DOCDATE", pBldat)
             oDocHeader.SetValue("POSTGDATE", pBuDat)
-            oDocHeader.SetValue("USERNAME", destination.User)
+            If destination.User Is Nothing Then
+                oDocHeader.SetValue("USERNAME", destination.SystemAttributes.User)
+            Else
+                oDocHeader.SetValue("USERNAME", destination.User)
+            End If
             oRfcFunction.SetValue("IGNORE_WARNINGS", "X")
             Dim lRow As Object
             For Each lRow In pData
