@@ -5,6 +5,7 @@
 Imports SAP.Middleware.Connector
 
 Public Class SAPAcctngManCostAlloc
+    Private Shared ReadOnly log As log4net.ILog = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType)
     Private oRfcFunction As IRfcFunction
     Private destination As RfcCustomDestination
     Private sapcon As SapCon
@@ -12,7 +13,7 @@ Public Class SAPAcctngManCostAlloc
     Sub New(aSapCon As SapCon)
         Try
             sapcon = aSapCon
-            destination = aSapCon.getDestination()
+            aSapCon.getDestination(destination)
             sapcon.checkCon()
         Catch ex As System.Exception
             MsgBox("New failed! " & ex.Message, MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "SAPAcctngManCostAlloc")

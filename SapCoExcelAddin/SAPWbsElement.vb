@@ -5,36 +5,43 @@
 Imports SAP.Middleware.Connector
 
 Public Class SAPWbsElement
+
+    Private Shared ReadOnly log As log4net.ILog = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType)
     Private oRfcFunction As IRfcFunction
     Private destination As RfcCustomDestination
     Private sapcon As SapCon
 
     Sub New(aSapCon As SapCon)
+        sapcon = aSapCon
+        aSapCon.getDestination(destination)
+        log.Debug("New - " & "creating Function Z_CO_PS_PSP_INTERNAL")
         Try
-            sapcon = aSapCon
-            destination = aSapCon.getDestination()
-            sapcon.checkCon()
-        Catch ex As System.Exception
-            MsgBox("New failed! " & ex.Message, MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "SAPWbsElement")
+            oRfcFunction = destination.Repository.CreateFunction("Z_CO_PS_PSP_INTERNAL")
+            log.Debug("New - " & "oRfcFunction.Metadata.Name=" & oRfcFunction.Metadata.Name)
+        Catch ex As Exception
+            oRfcFunction = Nothing
+            log.Error("New - Exception=" & ex.ToString)
         End Try
     End Sub
 
     Public Function GetPspnr(pPOSID As String) As String
-        GetPspnr = ""
-        Try
-            oRfcFunction = destination.Repository.CreateFunction("Z_CO_PS_PSP_INTERNAL")
-            RfcSessionManager.BeginContext(destination)
-            oRfcFunction.SetValue("I_POSID", pPOSID)
-            ' call the BAPI
-            oRfcFunction.Invoke(destination)
-            GetPspnr = oRfcFunction.GetString("E_PSPNR")
-        Catch Ex As System.Exception
-            MsgBox("Error: Exception " & Ex.Message, MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "SAPWbsElement")
-            GetPspnr = "Error: Exception in GetPspnr"
-        Finally
-            RfcSessionManager.EndContext(destination)
-        End Try
+        If Not oRfcFunction Is Nothing Then
+            sapcon.checkCon()
+            Try
+                log.Debug("GetPspnr - " & "Setting Function parameters")
+                oRfcFunction.SetValue("I_POSID", pPOSID)
+                log.Debug("GetPspnr - " & "invoking " & oRfcFunction.Metadata.Name)
+                oRfcFunction.Invoke(destination)
+                GetPspnr = oRfcFunction.GetValue("E_PSPNR")
+                Exit Function
+            Catch ex As Exception
+                MsgBox("Exception in GetPspnr! " & ex.Message, MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "SAPWbsElement")
+                log.Error("GetPspnr - Exception=" & ex.ToString)
+                GetPspnr = "Fehler"
+            End Try
+        Else
+            GetPspnr = pPOSID
+        End If
     End Function
 
 End Class
-

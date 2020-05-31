@@ -3,8 +3,7 @@
 ' For a human readable version of the license, see https://creativecommons.org/licenses/by/4.0/
 
 Imports SAP.Middleware.Connector
-
-Public Class SAPAcctngRepstPrimCosts
+Public Class SapAcctngStatKeyFigures
     Private Shared ReadOnly log As log4net.ILog = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType)
     Private oRfcFunction As IRfcFunction
     Private destination As RfcCustomDestination
@@ -24,9 +23,9 @@ Public Class SAPAcctngRepstPrimCosts
         post = ""
         Try
             If pTest Then
-                oRfcFunction = destination.Repository.CreateFunction("BAPI_ACC_PRIMARY_COSTS_CHECK")
+                oRfcFunction = destination.Repository.CreateFunction("BAPI_ACC_STAT_KEY_FIG_CHECK")
             Else
-                oRfcFunction = destination.Repository.CreateFunction("BAPI_ACC_PRIMARY_COSTS_POST")
+                oRfcFunction = destination.Repository.CreateFunction("BAPI_ACC_STAT_KEY_FIG_POST")
             End If
             RfcSessionManager.BeginContext(destination)
             Dim lSAPFormat As New SAPFormat
@@ -44,27 +43,17 @@ Public Class SAPAcctngRepstPrimCosts
                 oDocHeader.SetValue("USERNAME", destination.User)
             End If
             oRfcFunction.SetValue("IGNORE_WARNINGS", "X")
-            Dim lRow As Object
+            Dim lRow As SapAcctngStatKeyFiguresDocItem
+            Dim lField As SAPCommon.TField
             For Each lRow In pData
                 oDocItems.Append()
-                oDocItems.SetValue("SEND_CCTR", lSAPFormat.unpack(lRow.SEND_CCTR, 10))
-                oDocItems.SetValue("SENACTTYPE", CStr(lRow.SENACTTYPE))
-                oDocItems.SetValue("SEN_ORDER", lSAPFormat.unpack(lRow.SEN_ORDER, 12))
-                oDocItems.SetValue("SEN_WBS_EL", CStr(lRow.SEN_WBS_EL))
-                oDocItems.SetValue("SEN_NETWRK", lSAPFormat.unpack(lRow.SEN_NETWRK, 12))
-                oDocItems.SetValue("SENOPERATN", lSAPFormat.unpack(lRow.SENOPERATN, 4))
-                oDocItems.SetValue("SEND_FUNCTION", CStr(lRow.SEND_FUNCTION))
-                oDocItems.SetValue("PERSON_NO", lSAPFormat.unpack(lRow.PERSON_NO, 8))
-                oDocItems.SetValue("COST_ELEM", lSAPFormat.unpack(lRow.COST_ELEM, 10))
-                oDocItems.SetValue("VALUE_TCUR", Decimal.Round(CDec(lRow.VALUE_TCUR), 2))
-                oDocItems.SetValue("SEG_TEXT", CStr(lRow.SEG_TEXT))
-                oDocItems.SetValue("REC_CCTR", lSAPFormat.unpack(lRow.REC_CCTR, 10))
-                oDocItems.SetValue("REC_ORDER", lSAPFormat.unpack(lRow.REC_ORDER, 12))
-                oDocItems.SetValue("REC_WBS_EL", CStr(lRow.REC_WBS_EL))
-                oDocItems.SetValue("REC_NETWRK", lSAPFormat.unpack(lRow.REC_NETWRK, 12))
-                oDocItems.SetValue("RECOPERATN", lSAPFormat.unpack(lRow.RECOPERATN, 4))
-                oDocItems.SetValue("REC_FUNCTION", CStr(lRow.REC_FUNCTION))
-                oDocItems.SetValue("TRANS_CURR", CStr(lRow.TRANS_CURR))
+                For Each lField In lRow.item.Values
+                    If lField.FType = "F" Then
+                        oDocItems.SetValue(lField.Name, Decimal.Round(CDec(lField.Value), 3))
+                    Else
+                        oDocItems.SetValue(lField.Name, lField.Value)
+                    End If
+                Next
             Next
             ' call the BAPI
             oRfcFunction.Invoke(destination)
@@ -86,7 +75,6 @@ Public Class SAPAcctngRepstPrimCosts
         Finally
             RfcSessionManager.EndContext(destination)
         End Try
-
     End Function
 
 End Class

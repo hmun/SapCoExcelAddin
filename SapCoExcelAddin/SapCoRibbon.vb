@@ -8,6 +8,7 @@ Imports SAP.Middleware.Connector
 Public Class SapCoRibbon
     Private aSapCon
     Private aSapGeneral
+    Private Shared ReadOnly log As log4net.ILog = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType)
     Const AI_CM = 22 ' column of message for activity posting
     Const PC_CM = 21 ' column of message for primary cost reposting
     Const MC_CM = 20 ' column of message for manual cost allocation
@@ -15,48 +16,80 @@ Public Class SapCoRibbon
     Private aCoAre As String
     Private aOperatingConcern As String
     Private aMaxLines As String
-
+    Private aIgnoreSelf As String
+    Private aFromLine As String
+    Private aToLine As String
+    Private aDocDate As String
+    Private aPostDate As String
 
     Private Function checkCon() As Integer
         Dim aSapConRet As Integer
         Dim aSapVersionRet As Integer
         checkCon = False
+        log.Debug("checkCon - " & "checking Version")
         If Not aSapGeneral.checkVersion() Then
             Exit Function
         End If
+        log.Debug("checkCon - " & "checking Connection")
         aSapConRet = 0
         If aSapCon Is Nothing Then
-            aSapCon = New SapCon
-            aSapConRet = aSapCon.checkCon()
+            Try
+                aSapCon = New SapCon()
+            Catch ex As SystemException
+                log.Warn("checkCon-New SapCon - )" & ex.ToString)
+            End Try
         End If
+        Try
+            aSapConRet = aSapCon.checkCon()
+        Catch ex As SystemException
+            log.Warn("checkCon-aSapCon.checkCon - )" & ex.ToString)
+        End Try
         If aSapConRet = 0 Then
-            aSapVersionRet = aSapGeneral.checkVersionInSAP(aSapCon)
+            log.Debug("checkCon - " & "checking version in SAP")
+            Try
+                aSapVersionRet = aSapGeneral.checkVersionInSAP(aSapCon)
+            Catch ex As SystemException
+                log.Warn("checkCon - )" & ex.ToString)
+            End Try
+            log.Debug("checkCon - " & "aSapVersionRet=" & CStr(aSapVersionRet))
             If aSapVersionRet = True Then
+                log.Debug("checkCon - " & "checkCon = True")
                 checkCon = True
+            Else
+                log.Debug("checkCon - " & "connection check failed")
             End If
         End If
     End Function
 
     Private Sub ButtonLogoff_Click(sender As Object, e As RibbonControlEventArgs) Handles ButtonLogoff.Click
+        log.Debug("ButtonLogoff_Click - " & "starting logoff")
         If Not aSapCon Is Nothing Then
+            log.Debug("ButtonLogoff_Click - " & "calling aSapCon.SAPlogoff()")
             aSapCon.SAPlogoff()
             aSapCon = Nothing
         End If
+        log.Debug("ButtonLogoff_Click - " & "exit")
     End Sub
 
     Private Sub ButtonLogon_Click(sender As Object, e As RibbonControlEventArgs) Handles ButtonLogon.Click
         Dim aConRet As Integer
 
+        log.Debug("ButtonLogon_Click - " & "checking Version")
         If Not aSapGeneral.checkVersion() Then
+            log.Debug("ButtonLogon_Click - " & "Version check failed")
             Exit Sub
         End If
+        log.Debug("ButtonLogon_Click - " & "creating SapCon")
         If aSapCon Is Nothing Then
-            aSapCon = New SapCon
+            aSapCon = New SapCon()
         End If
+        log.Debug("ButtonLogon_Click - " & "calling SapCon.checkCon()")
         aConRet = aSapCon.checkCon()
         If aConRet = 0 Then
-            MsgBox("SAP-Logon successful! ", MsgBoxStyle.OkOnly Or MsgBoxStyle.Information, "Sap Controlling")
+            log.Debug("ButtonLogon_Click - " & "connection successfull")
+            MsgBox("SAP-Logon successful! ", MsgBoxStyle.OkOnly Or MsgBoxStyle.Information, "Sap Accounting")
         Else
+            log.Debug("ButtonLogon_Click - " & "connection failed")
             aSapCon = Nothing
         End If
     End Sub
@@ -92,48 +125,45 @@ Public Class SapCoRibbon
             getActivityAllocParameters = False
             Exit Function
         End If
+        Dim i As Integer
+        i = 4
+        Do While CStr(aPws.Cells(i, 1).Value) <> ""
+            If CStr(aPws.Cells(i, 1).Value) = "IgnoreSelf" Then
+                aIgnoreSelf = CStr(aPws.Cells(i, 2).Value)
+            End If
+            If CStr(aPws.Cells(i, 1).Value) = "FromLine" Then
+                aFromLine = CStr(aPws.Cells(i, 2).Value)
+            End If
+            If CStr(aPws.Cells(i, 1).Value) = "ToLine" Then
+                aToLine = CStr(aPws.Cells(i, 2).Value)
+            End If
+            i = i + 1
+        Loop
+        If aIgnoreSelf Is Nothing Then
+            aIgnoreSelf = ""
+        End If
+        If aFromLine Is Nothing Then
+            aFromLine = ""
+        End If
+        If aToLine Is Nothing Then
+            aToLine = ""
+        End If
         getActivityAllocParameters = True
     End Function
 
     Private Sub ButtonActivityAllocCheck_Click(sender As Object, e As RibbonControlEventArgs) Handles ButtonActivityAllocCheck.Click
-        Dim aSapConRet As Integer
-        Dim aSapVersionRet As Integer
-        If Not aSapGeneral.checkVersion() Then
-            Exit Sub
-        End If
-        aSapConRet = 0
-        If aSapCon Is Nothing Then
-            aSapCon = New SapCon
-        End If
-        aSapConRet = aSapCon.checkCon()
-        If aSapConRet = 0 Then
-            aSapVersionRet = aSapGeneral.checkVersionInSAP(aSapCon)
-            If aSapVersionRet = True Then
-                SAP_ActivityAlloc_execute(pTest:=True)
-            End If
+        If checkCon() = True Then
+            SAP_ActivityAlloc_execute(pTest:=True)
         Else
-            aSapCon = Nothing
+            MsgBox("Checking SAP-Connection failed!", MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "Sap ButtonActivityAllocCheck_Click")
         End If
     End Sub
 
     Private Sub ButtonActivityAllocPost_Click(sender As Object, e As RibbonControlEventArgs) Handles ButtonActivityAllocPost.Click
-        Dim aSapConRet As Integer
-        Dim aSapVersionRet As Integer
-        If Not aSapGeneral.checkVersion() Then
-            Exit Sub
-        End If
-        aSapConRet = 0
-        If aSapCon Is Nothing Then
-            aSapCon = New SapCon
-        End If
-        aSapConRet = aSapCon.checkCon()
-        If aSapConRet = 0 Then
-            aSapVersionRet = aSapGeneral.checkVersionInSAP(aSapCon)
-            If aSapVersionRet = True Then
-                SAP_ActivityAlloc_execute(pTest:=False)
-            End If
+        If checkCon() = True Then
+            SAP_ActivityAlloc_execute(pTest:=False)
         Else
-            aSapCon = Nothing
+            MsgBox("Checking SAP-Connection failed!", MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "Sap ButtonActivityAllocPost_Click")
         End If
     End Sub
 
@@ -171,10 +201,19 @@ Public Class SapCoRibbon
         Dim aBUDAT As String
         Dim aBLDAT As String
         Dim aCells As Excel.Range
+        Dim aFrom As UInteger
+        Dim aTo As UInteger
         aBUDAT = ""
         aBLDAT = ""
+        If aFromLine <> "" And aToLine <> "" Then
+            aFrom = CUInt(aFromLine)
+            aTo = CUInt(aToLine)
+        Else
+            aFrom = 2
+            aTo = UInt32.MaxValue
+        End If
         Try
-            i = 2
+            i = aFrom
             aLines = 1
             aPostLine = i - 1
             Do
@@ -198,25 +237,33 @@ Public Class SapCoRibbon
                                                                            CDbl(FormatNumber(CDbl(aDws.Cells(i, 18).Value), 2, True, False, False)),
                                                                            CDbl(FormatNumber(CDbl(aDws.Cells(i, 19).Value), 2, True, False, False)),
                                                                            CDbl(FormatNumber(CDbl(aDws.Cells(i, 20).Value), 2, True, False, False)))
-                    aData.Add(aSAPAcctngActivityItem)
-                    If aLines >= CInt(aMaxLines) Then
-                        aRetStr = aSAPAcctngActivityAlloc.post(aCoAre, CDate(aBUDAT), CDate(aBLDAT), aData, pTest)
-                        aCells = aDws.Range(aDws.Cells(aPostLine + 1, AI_CM), aDws.Cells(i, AI_CM))
-                        aCells.Value = aRetStr
-                        aData = New Collection
-                        aLines = 1
-                        aBUDAT = ""
-                        aPostLine = i
+                    If aIgnoreSelf.ToUpper() = "" Or aSAPAcctngActivityItem.SEND_CCTR <> aSAPAcctngActivityItem.REC_CCTR Then
+                        aData.Add(aSAPAcctngActivityItem)
+                        If aLines >= CInt(aMaxLines) Then
+                            aRetStr = aSAPAcctngActivityAlloc.post(aCoAre, CDate(aBUDAT), CDate(aBLDAT), aData, pTest)
+                            aCells = aDws.Range(aDws.Cells(aPostLine + 1, AI_CM), aDws.Cells(i, AI_CM))
+                            aCells.Value = aRetStr
+                            aData = New Collection
+                            aRetStr = ""
+                            aLines = 1
+                            aBUDAT = ""
+                            aPostLine = i
+                        Else
+                            aLines += 1
+                        End If
                     Else
-                        aLines = aLines + 1
+                        If aPostLine = i - 1 Then
+                            aPostLine += 1
+                        End If
                     End If
                 End If
-                i = i + 1
-            Loop While CStr(aDws.Cells(i, 1).value) <> ""
+                i += 1
+            Loop While CStr(aDws.Cells(i, 1).value) <> "" And i <= aTo
             If aData.Count > 0 Then
                 aRetStr = aSAPAcctngActivityAlloc.post(aCoAre, CDate(aBUDAT), CDate(aBLDAT), aData, pTest)
                 aCells = aDws.Range(aDws.Cells(aPostLine + 1, AI_CM), aDws.Cells(i - 1, AI_CM))
                 aCells.Value = aRetStr
+                aRetStr = ""
             End If
             Globals.SapCoExcelAddin.Application.EnableEvents = True
             Globals.SapCoExcelAddin.Application.ScreenUpdating = True
@@ -261,44 +308,18 @@ Public Class SapCoRibbon
     End Function
 
     Private Sub ButtonRepstPrimCostsCheck_Click(sender As Object, e As RibbonControlEventArgs) Handles ButtonRepstPrimCostsCheck.Click
-        Dim aSapConRet As Integer
-        Dim aSapVersionRet As Integer
-        If Not aSapGeneral.checkVersion() Then
-            Exit Sub
-        End If
-        aSapConRet = 0
-        If aSapCon Is Nothing Then
-            aSapCon = New SapCon
-        End If
-        aSapConRet = aSapCon.checkCon()
-        If aSapConRet = 0 Then
-            aSapVersionRet = aSapGeneral.checkVersionInSAP(aSapCon)
-            If aSapVersionRet = True Then
-                SAP_RepstPrimCosts_execute(pTest:=True)
-            End If
+        If checkCon() = True Then
+            SAP_RepstPrimCosts_execute(pTest:=True)
         Else
-            aSapCon = Nothing
+            MsgBox("Checking SAP-Connection failed!", MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "Sap ButtonRepstPrimCostsCheck_Click")
         End If
     End Sub
 
     Private Sub ButtonRepstPrimCostsPost_Click(sender As Object, e As RibbonControlEventArgs) Handles ButtonRepstPrimCostsPost.Click
-        Dim aSapConRet As Integer
-        Dim aSapVersionRet As Integer
-        If Not aSapGeneral.checkVersion() Then
-            Exit Sub
-        End If
-        aSapConRet = 0
-        If aSapCon Is Nothing Then
-            aSapCon = New SapCon
-        End If
-        aSapConRet = aSapCon.checkCon()
-        If aSapConRet = 0 Then
-            aSapVersionRet = aSapGeneral.checkVersionInSAP(aSapCon)
-            If aSapVersionRet = True Then
-                SAP_RepstPrimCosts_execute(pTest:=False)
-            End If
+        If checkCon() = True Then
+            SAP_RepstPrimCosts_execute(pTest:=False)
         Else
-            aSapCon = Nothing
+            MsgBox("Checking SAP-Connection failed!", MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "Sap ButtonRepstPrimCostsPost_Click")
         End If
     End Sub
 
@@ -420,44 +441,18 @@ Public Class SapCoRibbon
     End Function
 
     Private Sub ButtonManCostAllocCheck_Click(sender As Object, e As RibbonControlEventArgs) Handles ButtonManCostAllocCheck.Click
-        Dim aSapConRet As Integer
-        Dim aSapVersionRet As Integer
-        If Not aSapGeneral.checkVersion() Then
-            Exit Sub
-        End If
-        aSapConRet = 0
-        If aSapCon Is Nothing Then
-            aSapCon = New SapCon
-        End If
-        aSapConRet = aSapCon.checkCon()
-        If aSapConRet = 0 Then
-            aSapVersionRet = aSapGeneral.checkVersionInSAP(aSapCon)
-            If aSapVersionRet = True Then
-                SAP_ManCostAlloc_execute(pTest:=True)
-            End If
+        If checkCon() = True Then
+            SAP_ManCostAlloc_execute(pTest:=True)
         Else
-            aSapCon = Nothing
+            MsgBox("Checking SAP-Connection failed!", MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "Sap ButtonManCostAllocCheck_Click")
         End If
     End Sub
 
     Private Sub ButtonManCostAllocPost_Click(sender As Object, e As RibbonControlEventArgs) Handles ButtonManCostAllocPost.Click
-        Dim aSapConRet As Integer
-        Dim aSapVersionRet As Integer
-        If Not aSapGeneral.checkVersion() Then
-            Exit Sub
-        End If
-        aSapConRet = 0
-        If aSapCon Is Nothing Then
-            aSapCon = New SapCon
-        End If
-        aSapConRet = aSapCon.checkCon()
-        If aSapConRet = 0 Then
-            aSapVersionRet = aSapGeneral.checkVersionInSAP(aSapCon)
-            If aSapVersionRet = True Then
-                SAP_ManCostAlloc_execute(pTest:=False)
-            End If
+        If checkCon() = True Then
+            SAP_ManCostAlloc_execute(pTest:=False)
         Else
-            aSapCon = Nothing
+            MsgBox("Checking SAP-Connection failed!", MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "Sap ButtonManCostAllocPost_Click")
         End If
     End Sub
 
@@ -580,44 +575,18 @@ Public Class SapCoRibbon
     End Function
 
     Private Sub ButtonCheckCostingBasedData_Click(sender As Object, e As RibbonControlEventArgs) Handles ButtonCheckCostingBasedData.Click
-        Dim aSapConRet As Integer
-        Dim aSapVersionRet As Integer
-        If Not aSapGeneral.checkVersion() Then
-            Exit Sub
-        End If
-        aSapConRet = 0
-        If aSapCon Is Nothing Then
-            aSapCon = New SapCon
-        End If
-        aSapConRet = aSapCon.checkCon()
-        If aSapConRet = 0 Then
-            aSapVersionRet = aSapGeneral.checkVersionInSAP(aSapCon)
-            If aSapVersionRet = True Then
-                SAP_COPA_exec(pTest:=True)
-            End If
+        If checkCon() = True Then
+            SAP_COPA_exec(pTest:=True)
         Else
-                aSapCon = Nothing
+            MsgBox("Checking SAP-Connection failed!", MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "Sap ButtonPostCostingBasedData_Click")
         End If
     End Sub
 
     Private Sub ButtonPostCostingBasedData_Click(sender As Object, e As RibbonControlEventArgs) Handles ButtonPostCostingBasedData.Click
-        Dim aSapConRet As Integer
-        Dim aSapVersionRet As Integer
-        If Not aSapGeneral.checkVersion() Then
-            Exit Sub
-        End If
-        aSapConRet = 0
-        If aSapCon Is Nothing Then
-            aSapCon = New SapCon
-        End If
-        aSapConRet = aSapCon.checkCon()
-        If aSapConRet = 0 Then
-            aSapVersionRet = aSapGeneral.checkVersionInSAP(aSapCon)
-            If aSapVersionRet = True Then
-                SAP_COPA_exec(pTest:=False)
-            End If
+        If checkCon() = True Then
+            SAP_COPA_exec(pTest:=False)
         Else
-            aSapCon = Nothing
+            MsgBox("Checking SAP-Connection failed!", MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "Sap ButtonPostCostingBasedData_Click")
         End If
     End Sub
 
@@ -761,6 +730,167 @@ Public Class SapCoRibbon
         Globals.SapCoExcelAddin.Application.EnableEvents = True
         Globals.SapCoExcelAddin.Application.ScreenUpdating = True
         Globals.SapCoExcelAddin.Application.Cursor = Microsoft.Office.Interop.Excel.XlMousePointer.xlDefault
+    End Sub
+
+    Private Function getStatKeyFiguresParameters() As Integer
+        Dim aPws As Excel.Worksheet
+        Dim aWB As Excel.Workbook
+        Dim aKey As String
+        Dim aDateFormatString As New DateFormatString
+        aWB = Globals.SapCoExcelAddin.Application.ActiveWorkbook
+        Try
+            aPws = aWB.Worksheets("Parameter")
+        Catch Exc As System.Exception
+            MsgBox("No Parameter Sheet in current workbook. Check if the current workbook is a valid SAP CO StatKeyFigure Template",
+                   MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "Sap CO-OM")
+            getStatKeyFiguresParameters = False
+            Exit Function
+        End Try
+        aKey = CStr(aPws.Cells(1, 1).Value)
+        If aKey <> "SAPAcctngPostStatKeyFigure" Then
+            MsgBox("Cell A1 of the parameter sheet does not contain the key SAPAcctngPostStatKeyFigure. Check if the current workbook is a valid SAP CO StatKeyFigure Template",
+                   MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "Sap CO-OM")
+            getStatKeyFiguresParameters = False
+            Exit Function
+        End If
+        aPostDate = Format(aPws.Cells(2, 2).Value, aDateFormatString.getString)
+        aDocDate = Format(aPws.Cells(3, 2).Value, aDateFormatString.getString)
+        aCoAre = CStr(aPws.Cells(4, 2).Value)
+        aMaxLines = CInt(aPws.Cells(5, 2).Value)
+        If aCoAre = "" Then
+            MsgBox("Please fill all obligatory fields in the parameter sheet!", MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "Sap StatKeyFigure")
+            getStatKeyFiguresParameters = False
+            Exit Function
+        End If
+        getStatKeyFiguresParameters = True
+    End Function
+
+    Private Sub ButtonStatKeyFiguresCheck_Click(sender As Object, e As RibbonControlEventArgs) Handles ButtonStatKeyFiguresCheck.Click
+        If checkCon() = True Then
+            SAP_StatKeyFigures_execute(pTest:=True)
+        Else
+            MsgBox("Checking SAP-Connection failed!", MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "Sap ButtonStatKeyFiguresCheck_Click")
+        End If
+    End Sub
+
+    Private Sub ButtonStatKeyFiguresPost_Click(sender As Object, e As RibbonControlEventArgs) Handles ButtonStatKeyFiguresPost.Click
+        If checkCon() = True Then
+            SAP_StatKeyFigures_execute(pTest:=False)
+        Else
+            MsgBox("Checking SAP-Connection failed!", MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "Sap ButtonStatKeyFiguresPost_Click")
+        End If
+    End Sub
+
+    Private Sub SAP_StatKeyFigures_execute(pTest As Boolean)
+        Dim i As Integer
+        Dim j As Integer
+        Dim maxJ As Integer
+        Dim aLines As Integer
+        Dim aPostLine As Integer
+        Dim aData As New Collection
+        Dim aRetStr As String
+        Dim aDateFormatString As New DateFormatString
+        Dim aSapAcctngStatKeyFiguresDocItem As New SapAcctngStatKeyFiguresDocItem
+        Dim aSAPFormat As New SAPFormat
+        Dim aFIELDNAME As String
+        Dim aVALUE As Object
+
+        If getStatKeyFiguresParameters() = False Then
+            Exit Sub
+        End If
+        If checkCon() = False Then
+            Exit Sub
+        End If
+        Dim aSAPAcctngStatKeyFigures As New SapAcctngStatKeyFigures(aSapCon)
+        Dim aWB As Excel.Workbook
+        Dim aDws As Excel.Worksheet
+        aWB = Globals.SapCoExcelAddin.Application.ActiveWorkbook
+        Try
+            aDws = aWB.Worksheets("Data")
+        Catch Exc As System.Exception
+            MsgBox("No Data Sheet in current workbook. Check if the current workbook is a valid SAP CO StatKeyFigures Template",
+                       MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "Sap CO-OM")
+            Exit Sub
+        End Try
+        aRetStr = ""
+        aDws.Activate()
+        Globals.SapCoExcelAddin.Application.Cursor = Microsoft.Office.Interop.Excel.XlMousePointer.xlWait
+        Globals.SapCoExcelAddin.Application.EnableEvents = False
+        Globals.SapCoExcelAddin.Application.ScreenUpdating = False
+        ' determine the last column
+        maxJ = 1
+        Do
+            maxJ += 1
+        Loop While CStr(aDws.Cells(1, maxJ).Value) <> ""
+
+        Dim aCells As Excel.Range
+        Try
+            i = 4
+            aLines = 1
+            aPostLine = i - 1
+            Do
+                If InStr(CStr(aDws.Cells(i, maxJ).Value), "Beleg wird unter der Nummer") = 0 And
+                   InStr(CStr(aDws.Cells(i, maxJ).Value), "Document is posted under number") = 0 Then
+                    ' fill the items here
+                    aSapAcctngStatKeyFiguresDocItem = New SapAcctngStatKeyFiguresDocItem
+                    j = 1
+                    Do
+                        aVALUE = ""
+                        aFIELDNAME = ""
+                        If aDws.Cells(i, j).Value IsNot Nothing Then
+                            aFIELDNAME = CStr(aDws.Cells(1, j).Value)
+                            Select Case CStr(aDws.Cells(2, j).Value)
+                                Case "DOUBLE"
+                                    aVALUE = FormatNumber(CDbl(aDws.Cells(i, j).Value), 3, True, False, False)
+                                    aSapAcctngStatKeyFiguresDocItem.SetField(aFIELDNAME, aVALUE, "F")
+                                Case "DATE"
+                                    Try
+                                        aVALUE = CDate(aDws.Cells(i, j).Value).ToString("yyyyMMdd")
+                                    Catch Exc As System.Exception
+                                        aVALUE = ""
+                                    End Try
+                                    aSapAcctngStatKeyFiguresDocItem.SetField(aFIELDNAME, aVALUE, "S")
+                                Case Else
+                                    If Left(aDws.Cells(2, j).Value, 1) = "U" Then
+                                        aVALUE = aSAPFormat.unpack(aDws.Cells(i, j).Value, CInt(Right(aDws.Cells(2, j).Value, Len(aDws.Cells(2, j).Value) - 1)))
+                                    ElseIf Left(aDws.Cells(2, j).Value, 1) = "P" Then
+                                        aVALUE = aSAPFormat.pspid(aDws.Cells(i, j).Value, CInt(Right(aDws.Cells(2, j).Value, Len(aDws.Cells(2, j).Value) - 1)))
+                                    Else
+                                        aVALUE = aDws.Cells(i, j).Value
+                                    End If
+                                    aSapAcctngStatKeyFiguresDocItem.SetField(aFIELDNAME, aVALUE, "S")
+                            End Select
+                        End If
+                        j += 1
+                    Loop While CStr(aDws.Cells(1, j).Value) <> ""
+                    aData.Add(aSapAcctngStatKeyFiguresDocItem)
+                    If aLines >= CInt(aMaxLines) Then
+                        aRetStr = aSAPAcctngStatKeyFigures.post(aCoAre, CDate(aPostDate), CDate(aDocDate), aData, pTest)
+                        aCells = aDws.Range(aDws.Cells(aPostLine + 1, maxJ), aDws.Cells(i, maxJ))
+                        aCells.Value = aRetStr
+                        aData = New Collection
+                        aLines = 1
+                        aPostLine = i
+                    Else
+                        aLines += 1
+                    End If
+                End If
+                i += 1
+            Loop While CStr(aDws.Cells(i, 1).value) <> ""
+            If aData.Count > 0 Then
+                aRetStr = aSAPAcctngStatKeyFigures.post(aCoAre, CDate(aPostDate), CDate(aDocDate), aData, pTest)
+                aCells = aDws.Range(aDws.Cells(aPostLine + 1, maxJ), aDws.Cells(i - 1, maxJ))
+                aCells.Value = aRetStr
+            End If
+            Globals.SapCoExcelAddin.Application.EnableEvents = True
+            Globals.SapCoExcelAddin.Application.ScreenUpdating = True
+            Globals.SapCoExcelAddin.Application.Cursor = Microsoft.Office.Interop.Excel.XlMousePointer.xlDefault
+        Catch Ex As System.Exception
+            Globals.SapCoExcelAddin.Application.EnableEvents = True
+            Globals.SapCoExcelAddin.Application.ScreenUpdating = True
+            Globals.SapCoExcelAddin.Application.Cursor = Microsoft.Office.Interop.Excel.XlMousePointer.xlDefault
+            MsgBox("Error: Exception " & Ex.Message, MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "SAP_StatKeyFigures_execute")
+        End Try
     End Sub
 
 End Class

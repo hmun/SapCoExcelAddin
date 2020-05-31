@@ -58,12 +58,16 @@
         Me.SAPCoLogon = Me.Factory.CreateRibbonGroup
         Me.ButtonLogon = Me.Factory.CreateRibbonButton
         Me.ButtonLogoff = Me.Factory.CreateRibbonButton
+        Me.SAPStatKeyFigures = Me.Factory.CreateRibbonGroup
+        Me.ButtonStatKeyFiguresCheck = Me.Factory.CreateRibbonButton
+        Me.ButtonStatKeyFiguresPost = Me.Factory.CreateRibbonButton
         Me.SapCo.SuspendLayout()
         Me.SAPActivityAlloc.SuspendLayout()
         Me.SAPRepstPrimCosts.SuspendLayout()
         Me.SAPManCostAlloc.SuspendLayout()
         Me.SAPCOPAActuals.SuspendLayout()
         Me.SAPCoLogon.SuspendLayout()
+        Me.SAPStatKeyFigures.SuspendLayout()
         Me.SuspendLayout()
         '
         'SapCo
@@ -71,6 +75,7 @@
         Me.SapCo.Groups.Add(Me.SAPActivityAlloc)
         Me.SapCo.Groups.Add(Me.SAPRepstPrimCosts)
         Me.SapCo.Groups.Add(Me.SAPManCostAlloc)
+        Me.SapCo.Groups.Add(Me.SAPStatKeyFigures)
         Me.SapCo.Groups.Add(Me.SAPCOPAActuals)
         Me.SapCo.Groups.Add(Me.SAPCoLogon)
         Me.SapCo.Label = "SAP CO"
@@ -189,6 +194,29 @@
         Me.ButtonLogoff.Name = "ButtonLogoff"
         Me.ButtonLogoff.ShowImage = True
         '
+        'SAPStatKeyFigures
+        '
+        Me.SAPStatKeyFigures.Items.Add(Me.ButtonStatKeyFiguresCheck)
+        Me.SAPStatKeyFigures.Items.Add(Me.ButtonStatKeyFiguresPost)
+        Me.SAPStatKeyFigures.Label = "CO StatKeyFigures"
+        Me.SAPStatKeyFigures.Name = "SAPStatKeyFigures"
+        '
+        'ButtonStatKeyFiguresCheck
+        '
+        Me.ButtonStatKeyFiguresCheck.Image = CType(resources.GetObject("ButtonStatKeyFiguresCheck.Image"), System.Drawing.Image)
+        Me.ButtonStatKeyFiguresCheck.Label = "StatKeyFigures Check"
+        Me.ButtonStatKeyFiguresCheck.Name = "ButtonStatKeyFiguresCheck"
+        Me.ButtonStatKeyFiguresCheck.ScreenTip = "Check Stat. Key Figure Documnt"
+        Me.ButtonStatKeyFiguresCheck.ShowImage = True
+        '
+        'ButtonStatKeyFiguresPost
+        '
+        Me.ButtonStatKeyFiguresPost.Image = CType(resources.GetObject("ButtonStatKeyFiguresPost.Image"), System.Drawing.Image)
+        Me.ButtonStatKeyFiguresPost.Label = "StatKeyFigures Post"
+        Me.ButtonStatKeyFiguresPost.Name = "ButtonStatKeyFiguresPost"
+        Me.ButtonStatKeyFiguresPost.ScreenTip = "Post Stat. Key Figure Documnt"
+        Me.ButtonStatKeyFiguresPost.ShowImage = True
+        '
         'SapCoRibbon
         '
         Me.Name = "SapCoRibbon"
@@ -206,6 +234,8 @@
         Me.SAPCOPAActuals.PerformLayout()
         Me.SAPCoLogon.ResumeLayout(False)
         Me.SAPCoLogon.PerformLayout()
+        Me.SAPStatKeyFigures.ResumeLayout(False)
+        Me.SAPStatKeyFigures.PerformLayout()
         Me.ResumeLayout(False)
 
     End Sub
@@ -226,6 +256,9 @@
     Friend WithEvents SAPManCostAlloc As Microsoft.Office.Tools.Ribbon.RibbonGroup
     Friend WithEvents ButtonManCostAllocCheck As Microsoft.Office.Tools.Ribbon.RibbonButton
     Friend WithEvents ButtonManCostAllocPost As Microsoft.Office.Tools.Ribbon.RibbonButton
+    Friend WithEvents SAPStatKeyFigures As Microsoft.Office.Tools.Ribbon.RibbonGroup
+    Friend WithEvents ButtonStatKeyFiguresCheck As Microsoft.Office.Tools.Ribbon.RibbonButton
+    Friend WithEvents ButtonStatKeyFiguresPost As Microsoft.Office.Tools.Ribbon.RibbonButton
 End Class
 
 Partial Class ThisRibbonCollection

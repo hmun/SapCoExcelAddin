@@ -1,6 +1,7 @@
 ﻿Imports SAP.Middleware.Connector
 
 Public Class SAPCOPAActuals
+    Private Shared ReadOnly log As log4net.ILog = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType)
     Private oRfcFunction As IRfcFunction
     Private destination As RfcCustomDestination
     Private sapcon As SapCon
@@ -8,7 +9,7 @@ Public Class SAPCOPAActuals
     Sub New(aSapCon As SapCon)
         Try
             sapcon = aSapCon
-            destination = aSapCon.getDestination()
+            aSapCon.getDestination(destination)
             sapcon.checkCon()
         Catch ex As System.Exception
             MsgBox("New failed! " & ex.Message, MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "SAPCOPAActuals")
@@ -45,7 +46,7 @@ Public Class SAPCOPAActuals
                     oInputData.SetValue("FIELDNAME", aItem.gFIELDNAME)
                     If aItem.gCURRENCY IsNot Nothing And aItem.gCURRENCY <> "" Then
                         oInputData.SetValue("CURRENCY", aItem.gCURRENCY)
-                        oInputData.SetValue("VALUE", Decimal.Round(CDec(aItem.gVALUE), 2))
+                        oInputData.SetValue("VALUE", CStr(Decimal.Round(CDec(aItem.gVALUE), 2)))
                     Else
                         oInputData.SetValue("VALUE", aItem.gVALUE)
                     End If

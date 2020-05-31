@@ -5,7 +5,7 @@
 Public Class SapCoExcelAddin
 
     Private Sub SapCoExcelAddin_Startup() Handles Me.Startup
-
+        log4net.Config.XmlConfigurator.Configure()
     End Sub
 
     Private Sub SapCoExcelAddin_Shutdown() Handles Me.Shutdown

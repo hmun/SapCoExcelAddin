@@ -5,23 +5,32 @@ Imports SAP.Middleware.Connector
 
 Public Class SAPBapiTranctionCommit
 
+    Private Shared ReadOnly log As log4net.ILog = log4net.LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType)
     Private oRfcFunction As IRfcFunction
     Private destination As RfcCustomDestination
     Private sapcon As SapCon
 
     Sub New(aSapCon As SapCon)
         sapcon = aSapCon
-        destination = aSapCon.getDestination()
-        oRfcFunction = destination.Repository.CreateFunction("BAPI_TRANSACTION_COMMIT")
+        aSapCon.getDestination(destination)
+        log.Debug("New - " & "creating Function BAPI_TRANSACTION_COMMIT")
+        Try
+            oRfcFunction = destination.Repository.CreateFunction("BAPI_TRANSACTION_COMMIT")
+            log.Debug("New - " & "oRfcFunction.Metadata.Name=" & oRfcFunction.Metadata.Name)
+        Catch Exc As System.Exception
+            log.Error("New - Exception=" & Exc.ToString)
+        End Try
     End Sub
 
     Public Function commit() As Integer
         sapcon.checkCon()
         Try
+            log.Debug("commit - " & "invoking " & oRfcFunction.Metadata.Name)
             oRfcFunction.Invoke(destination)
             commit = 0
             Exit Function
         Catch ex As Exception
+            log.Error("commit - Exception=" & ex.ToString)
             MsgBox("Exception in commit! " & ex.Message, MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "SAPBapiTranctionCommit")
             commit = 8
         End Try

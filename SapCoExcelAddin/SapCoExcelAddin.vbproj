@@ -36,7 +36,7 @@
     <PublishUrl>T:\hmun\VbaGit_64\SapCoExcelAddin\x86\</PublishUrl>
     <InstallUrl />
     <TargetCulture>en</TargetCulture>
-    <ApplicationVersion>1.0.3.4</ApplicationVersion>
+    <ApplicationVersion>1.0.3.6</ApplicationVersion>
     <AutoIncrementApplicationRevision>true</AutoIncrementApplicationRevision>
     <UpdateEnabled>true</UpdateEnabled>
     <UpdateInterval>7</UpdateInterval>
@@ -148,6 +148,9 @@
   -->
   <ItemGroup>
     <Reference Include="Accessibility" />
+    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
+    </Reference>
     <Reference Include="sapnco_utils_x64">
       <HintPath>..\..\sapnco\sapnco_utils_x64.dll</HintPath>
     </Reference>
@@ -161,13 +164,32 @@
       <HintPath>..\..\sapnco\sapnco_x86.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Configuration.ConfigurationManager, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Configuration.ConfigurationManager.4.6.0\lib\net461\System.Configuration.ConfigurationManager.dll</HintPath>
+    </Reference>
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.OracleClient" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Security.AccessControl, Version=4.1.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.AccessControl.4.6.0\lib\net461\System.Security.AccessControl.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Permissions, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Permissions.4.6.0\lib\net461\System.Security.Permissions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Principal.Windows, Version=4.1.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Principal.Windows.4.6.0\lib\net461\System.Security.Principal.Windows.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ServiceProcess" />
+    <Reference Include="System.Transactions" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Office.Tools.v4.0.Framework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
@@ -218,10 +240,11 @@
   -->
   <ItemGroup>
     <AppDesigner Include="My Project\" />
+    <Compile Include="SapAcctngStatKeyFigures.vb" />
+    <Compile Include="SapAcctngStatKeyFiguresDocItem.vb" />
     <Compile Include="SAPCOPAActuals.vb" />
     <Compile Include="SAPCOPAItem.vb" />
     <Compile Include="SAPProjectDefinition.vb" />
-    <Compile Include="ConParameters.vb" />
     <Compile Include="DateFormatString.vb" />
     <Compile Include="FormDestinations.Designer.vb">
       <DependentUpon>FormDestinations.vb</DependentUpon>
@@ -249,7 +272,7 @@
     <Compile Include="SapCoRibbon.vb">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="SapExcelDestinationConfiguration.vb" />
+    <Compile Include="SapExcelDestination.vb" />
     <Compile Include="SAPFormat.vb" />
     <Compile Include="SapGeneral.vb" />
     <Compile Include="SapInMemoryDestinationConfiguration.vb" />
@@ -257,7 +280,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="SAPWbsElement.vb" />
-    <Compile Include="SAPZ_BC_EXCEL_ADDIN_VERS_CHK.vb" />
     <Compile Include="TField.vb" />
     <EmbeddedResource Include="FormLogon.resx">
       <DependentUpon>FormLogon.vb</DependentUpon>
@@ -269,6 +291,7 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="hmun.snk" />
+    <None Include="packages.config" />
     <None Include="SapCoExcelAddin.Designer.xml">
       <DependentUpon>SapCoExcelAddin.vb</DependentUpon>
     </None>
@@ -297,6 +320,19 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <None Include="SapCoExcelAddin_TemporaryKey.pfx" />
+    <None Include="sap_connections.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\SAPCommon\SAPCommon.csproj">
+      <Project>{2184afa6-8c6c-4f78-9ba0-00194de20330}</Project>
+      <Name>SAPCommon</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\SapLogon\SAPLogon.vbproj">
+      <Project>{9a0eb410-6384-4787-b4f4-ee019d70bfff}</Project>
+      <Name>SAPLogon</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -341,7 +377,7 @@
     </ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>0A36EF37D8F9851B6897205D8780AE0F66A018ED</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>6BAB58755E88C24AA3612D6503EE9AE9DC851B47</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -366,7 +402,7 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>hmun.snk</AssemblyOriginatorKeyFile>
