@@ -36,7 +36,7 @@
     <PublishUrl>T:\hmun\VbaGit_64\SapCoExcelAddin\x86\</PublishUrl>
     <InstallUrl />
     <TargetCulture>en</TargetCulture>
-    <ApplicationVersion>1.0.3.6</ApplicationVersion>
+    <ApplicationVersion>1.0.3.8</ApplicationVersion>
     <AutoIncrementApplicationRevision>true</AutoIncrementApplicationRevision>
     <UpdateEnabled>true</UpdateEnabled>
     <UpdateInterval>7</UpdateInterval>
@@ -148,20 +148,18 @@
   -->
   <ItemGroup>
     <Reference Include="Accessibility" />
-    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
-      <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
+    <Reference Include="log4net, Version=2.0.14.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.14\lib\net45\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="sapnco_utils_x64">
-      <HintPath>..\..\sapnco\sapnco_utils_x64.dll</HintPath>
+    <Reference Include="sapnco, Version=3.1.0.42, Culture=neutral, PublicKeyToken=50436dca5c7f7d23, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\sapnco\x86\3.1\sapnco.dll</HintPath>
+      <Private>False</Private>
     </Reference>
-    <Reference Include="sapnco_utils_x86">
-      <HintPath>..\..\sapnco\sapnco_utils_x86.dll</HintPath>
-    </Reference>
-    <Reference Include="sapnco_x64">
-      <HintPath>..\..\sapnco\sapnco_x64.dll</HintPath>
-    </Reference>
-    <Reference Include="sapnco_x86">
-      <HintPath>..\..\sapnco\sapnco_x86.dll</HintPath>
+    <Reference Include="sapnco_utils, Version=3.1.0.42, Culture=neutral, PublicKeyToken=50436dca5c7f7d23, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\sapnco\x86\3.1\sapnco_utils.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
@@ -184,6 +182,7 @@
     </Reference>
     <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Transactions" />
+    <Reference Include="System.Web" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
@@ -240,10 +239,13 @@
   -->
   <ItemGroup>
     <AppDesigner Include="My Project\" />
+    <Compile Include="MigHelper.vb" />
     <Compile Include="SapAcctngStatKeyFigures.vb" />
     <Compile Include="SapAcctngStatKeyFiguresDocItem.vb" />
+    <Compile Include="SAPBapiPS.vb" />
     <Compile Include="SAPCOPAActuals.vb" />
     <Compile Include="SAPCOPAItem.vb" />
+    <Compile Include="SapCoRibbonGenerate.vb" />
     <Compile Include="SAPProjectDefinition.vb" />
     <Compile Include="DateFormatString.vb" />
     <Compile Include="FormDestinations.Designer.vb">
@@ -279,8 +281,19 @@
     <Compile Include="SapCoExcelAddin.vb">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="SapPsMdRibbonWbs.vb" />
     <Compile Include="SAPWbsElement.vb" />
+    <Compile Include="SAPWBSPI.vb" />
+    <Compile Include="TData.vb" />
+    <Compile Include="TDataDic.vb" />
+    <Compile Include="TDataRec.vb" />
     <Compile Include="TField.vb" />
+    <Compile Include="TPostingData.vb" />
+    <Compile Include="TPostingDataRec.vb" />
+    <Compile Include="TSAP_WbsChgData.vb" />
+    <Compile Include="TSAP_WbsData.vb" />
+    <Compile Include="TSAP_WbsSettleData.vb" />
+    <Compile Include="TSAP_WbsGenData.vb" />
     <EmbeddedResource Include="FormLogon.resx">
       <DependentUpon>FormLogon.vb</DependentUpon>
     </EmbeddedResource>
@@ -319,7 +332,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <None Include="SapCoExcelAddin_TemporaryKey.pfx" />
     <None Include="sap_connections.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -377,7 +389,7 @@
     </ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>6BAB58755E88C24AA3612D6503EE9AE9DC851B47</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>5F76AF419AD2A8F9976728B49A6C32C0D90E2021</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>

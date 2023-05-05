@@ -3,7 +3,8 @@
 ' For a human readable version of the license, see https://creativecommons.org/licenses/by/4.0/
 
 Imports Microsoft.Office.Tools.Ribbon
-Imports SAP.Middleware.Connector
+Imports System.Configuration
+Imports System.Collections.Specialized
 
 Public Class SapCoRibbon
     Private aSapCon
@@ -21,6 +22,30 @@ Public Class SapCoRibbon
     Private aToLine As String
     Private aDocDate As String
     Private aPostDate As String
+
+    Private Function getIntParameters(ByRef pIntPar As SAPCommon.TStr) As Integer
+        Dim aPws As Excel.Worksheet
+        Dim aWB As Excel.Workbook
+        Dim i As Integer
+
+        log.Debug("getIntParameters - " & "reading Parameter")
+        aWB = Globals.SapCoExcelAddin.Application.ActiveWorkbook
+        Try
+            aPws = aWB.Worksheets("Parameter_Int")
+        Catch Exc As System.Exception
+            log.Debug("No Parameter_Int Sheet in current workbook. - ignored")
+            getIntParameters = True
+            Exit Function
+        End Try
+        i = 2
+        pIntPar = New SAPCommon.TStr
+        Do
+            pIntPar.add(CStr(aPws.Cells(i, 2).value), CStr(aPws.Cells(i, 3).value))
+            i += 1
+        Loop While CStr(aPws.Cells(i, 2).value) <> "" Or CStr(aPws.Cells(i, 2).value) <> ""
+        ' no obligatory parameters check - we should know what we are doing
+        getIntParameters = True
+    End Function
 
     Private Function checkCon() As Integer
         Dim aSapConRet As Integer
@@ -95,24 +120,70 @@ Public Class SapCoRibbon
     End Sub
 
     Private Sub SapCoRibbon_Load(ByVal sender As System.Object, ByVal e As RibbonUIEventArgs) Handles MyBase.Load
+        Dim sAll As NameValueCollection
+        Dim s As String
+        Dim enableGeneration As Boolean = False
+        Dim enableGenerationWBS As Boolean = False
+        Dim enablePS As Boolean = False
+        Dim enablePSGetWbs As Boolean = False
         aSapGeneral = New SapGeneral
+        Try
+            sAll = ConfigurationManager.AppSettings
+            s = sAll("enableGeneration")
+            enableGeneration = Convert.ToBoolean(s)
+            s = sAll("enableGenerationWBS")
+            enableGenerationWBS = Convert.ToBoolean(s)
+            s = sAll("enablePS")
+            enablePS = Convert.ToBoolean(s)
+            s = sAll("enablePSGetWbs")
+            enablePSGetWbs = Convert.ToBoolean(s)
+
+        Catch Exc As System.Exception
+            log.Error("SapCoRibbon_Load - " & "Exception=" & Exc.ToString)
+        End Try
+        If Not enableGeneration Then
+            Globals.Ribbons.SapCoRibbon.SAP_COGenerate.Visible = False
+        Else
+            Globals.Ribbons.SapCoRibbon.SAP_COGenerate.Visible = True
+        End If
+        If Not enableGenerationWBS Then
+            Globals.Ribbons.SapCoRibbon.ButtonGenerateWbs.Visible = False
+        Else
+            Globals.Ribbons.SapCoRibbon.ButtonGenerateWbs.Visible = True
+        End If
+        If Not enablePS Then
+            Globals.Ribbons.SapCoRibbon.SAP_COWbs.Visible = False
+        Else
+            Globals.Ribbons.SapCoRibbon.SAP_COWbs.Visible = True
+        End If
+        If Not enablePSGetWbs Then
+            Globals.Ribbons.SapCoRibbon.ButtonGetWbs.Visible = False
+        Else
+            Globals.Ribbons.SapCoRibbon.ButtonGetWbs.Visible = True
+        End If
     End Sub
 
     Private Function getActivityAllocParameters() As Integer
         Dim aPws As Excel.Worksheet
         Dim aWB As Excel.Workbook
         Dim aKey As String
+        Dim aIntPar As New SAPCommon.TStr
+        Dim aPwsName As String = "Parameter"
+        ' get internal parameters
+        If getIntParameters(aIntPar) Then
+            aPwsName = If(aIntPar.value("WS", "PARA_AI") <> "", aIntPar.value("WS", "PARA_AI"), "Parameter")
+        End If
         aWB = Globals.SapCoExcelAddin.Application.ActiveWorkbook
         Try
-            aPws = aWB.Worksheets("Parameter")
+            aPws = aWB.Worksheets(aPwsName)
         Catch Exc As System.Exception
-            MsgBox("No Parameter Sheet in current workbook. Check if the current workbook is a valid SAP CO ActivityAlloc Template",
+            MsgBox("No " & aPwsName & " Sheet in current workbook. Check if the current workbook is a valid SAP CO ActivityAlloc Template",
                    MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "Sap CO-OM")
             getActivityAllocParameters = False
             Exit Function
         End Try
         aKey = CStr(aPws.Cells(1, 1).Value)
-        If aKey <> "SAPAcctngActivityAlloc" Then
+        If aKey <> "SAPAcctngActivityAlloc" And aKey <> "SAPCoMultiple" Then
             MsgBox("Cell A1 of the parameter sheet does not contain the key SAPAcctngActivityAlloc. Check if the current workbook is a valid SAP CO Activity Allocation Template",
                    MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "Sap CO-OM")
             getActivityAllocParameters = False
@@ -175,21 +246,26 @@ Public Class SapCoRibbon
         Dim aRetStr As String
         Dim aDateFormatString As New DateFormatString
         Dim aSAPAcctngActivityItem As New SAPAcctngActivityItem
-
+        Dim aIntPar As New SAPCommon.TStr
+        Dim aDwsName As String = "Data"
+        ' get internal parameters
+        If getIntParameters(aIntPar) Then
+            aDwsName = If(aIntPar.value("WS", "DATA_AI") <> "", aIntPar.value("WS", "DATA_AI"), "Data")
+        End If
         If getActivityAllocParameters() = False Then
             Exit Sub
         End If
         If checkCon() = False Then
             Exit Sub
         End If
-        Dim aSAPAcctngActivityAlloc As New SAPAcctngActivityAlloc(aSapCon)
+        Dim aSAPAcctngActivityAlloc As New SAPAcctngActivityAlloc(aSapCon, pIntPar:=aIntPar)
         Dim aWB As Excel.Workbook
         Dim aDws As Excel.Worksheet
         aWB = Globals.SapCoExcelAddin.Application.ActiveWorkbook
         Try
-            aDws = aWB.Worksheets("Data")
+            aDws = aWB.Worksheets(aDwsName)
         Catch Exc As System.Exception
-            MsgBox("No Data Sheet in current workbook. Check if the current workbook is a valid SAP CO ActivityAlloc Template",
+            MsgBox("No " & aDwsName & " Sheet in current workbook. Check if the current workbook is a valid SAP CO ActivityAlloc Template",
                        MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "Sap CO-OM")
             Exit Sub
         End Try
@@ -281,17 +357,23 @@ Public Class SapCoRibbon
         Dim aPws As Excel.Worksheet
         Dim aWB As Excel.Workbook
         Dim aKey As String
+        Dim aIntPar As New SAPCommon.TStr
+        Dim aPwsName As String = "Parameter"
+        ' get internal parameters
+        If getIntParameters(aIntPar) Then
+            aPwsName = If(aIntPar.value("WS", "PARA_PC") <> "", aIntPar.value("WS", "PARA_PC"), "Parameter")
+        End If
         aWB = Globals.SapCoExcelAddin.Application.ActiveWorkbook
         Try
-            aPws = aWB.Worksheets("Parameter")
+            aPws = aWB.Worksheets(aPwsName)
         Catch Exc As System.Exception
-            MsgBox("No Parameter Sheet in current workbook. Check if the current workbook is a valid SAP CO RepstPrimCosts Template",
+            MsgBox("No " & aPwsName & " Sheet in current workbook. Check if the current workbook is a valid SAP CO RepstPrimCosts Template",
                    MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "Sap CO-OM")
             getCostPostingParameters = False
             Exit Function
         End Try
         aKey = CStr(aPws.Cells(1, 1).Value)
-        If aKey <> "SAPAcctngRepstPrimCosts" Then
+        If aKey <> "SAPAcctngRepstPrimCosts" And aKey <> "SAPCoMultiple" Then
             MsgBox("Cell A1 of the parameter sheet does not contain the key SAPAcctngRepstPrimCosts. Check if the current workbook is a valid SAP CO RepstPrimCosts Template",
                    MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "Sap CO-OM")
             getCostPostingParameters = False
@@ -331,21 +413,26 @@ Public Class SapCoRibbon
         Dim aRetStr As String
         Dim aDateFormatString As New DateFormatString
         Dim aSAPAcctngPrimCostsItem As New SAPAcctngPrimCostsItem
-
+        Dim aIntPar As New SAPCommon.TStr
+        Dim aDwsName As String = "Data"
+        ' get internal parameters
+        If getIntParameters(aIntPar) Then
+            aDwsName = If(aIntPar.value("WS", "DATA_PC") <> "", aIntPar.value("WS", "DATA_PC"), "Data")
+        End If
         If getCostPostingParameters() = False Then
             Exit Sub
         End If
         If checkCon() = False Then
             Exit Sub
         End If
-        Dim aSAPAcctngRepstPrimCosts As New SAPAcctngRepstPrimCosts(aSapCon)
+        Dim aSAPAcctngRepstPrimCosts As New SAPAcctngRepstPrimCosts(aSapCon, pIntPar:=aIntPar)
         Dim aWB As Excel.Workbook
         Dim aDws As Excel.Worksheet
         aWB = Globals.SapCoExcelAddin.Application.ActiveWorkbook
         Try
-            aDws = aWB.Worksheets("Data")
+            aDws = aWB.Worksheets(aDwsName)
         Catch Exc As System.Exception
-            MsgBox("No Data Sheet in current workbook. Check if the current workbook is a valid SAP CO RepstPrimCosts Template",
+            MsgBox("No " & aDwsName & " Sheet in current workbook. Check if the current workbook is a valid SAP CO RepstPrimCosts Template",
                        MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "Sap CO-OM")
             Exit Sub
         End Try
@@ -414,17 +501,23 @@ Public Class SapCoRibbon
         Dim aPws As Excel.Worksheet
         Dim aWB As Excel.Workbook
         Dim aKey As String
+        Dim aIntPar As New SAPCommon.TStr
+        Dim aPwsName As String = "Parameter"
+        ' get internal parameters
+        If getIntParameters(aIntPar) Then
+            aPwsName = If(aIntPar.value("WS", "PARA_MC") <> "", aIntPar.value("WS", "PARA_MC"), "Parameter")
+        End If
         aWB = Globals.SapCoExcelAddin.Application.ActiveWorkbook
         Try
-            aPws = aWB.Worksheets("Parameter")
+            aPws = aWB.Worksheets(aPwsName)
         Catch Exc As System.Exception
-            MsgBox("No Parameter Sheet in current workbook. Check if the current workbook is a valid SAP CO ManCostAlloc Template",
+            MsgBox("No " & aPwsName & " Sheet in current workbook. Check if the current workbook is a valid SAP CO ManCostAlloc Template",
                    MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "Sap CO-OM")
             getManCostAllocParameters = False
             Exit Function
         End Try
         aKey = CStr(aPws.Cells(1, 1).Value)
-        If aKey <> "SAPAcctngManCostAlloc" Then
+        If aKey <> "SAPAcctngManCostAlloc" And aKey <> "SAPCoMultiple" Then
             MsgBox("Cell A1 of the parameter sheet does not contain the key SAPManCostAlloc. Check if the current workbook is a valid SAP CO ManCostAlloc Template",
                    MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "Sap CO-OM")
             getManCostAllocParameters = False
@@ -464,21 +557,26 @@ Public Class SapCoRibbon
         Dim aRetStr As String
         Dim aDateFormatString As New DateFormatString
         Dim aSAPAcctngPrimCostsItem As New SAPAcctngPrimCostsItem
-
+        Dim aIntPar As New SAPCommon.TStr
+        Dim aDwsName As String = "Data"
+        ' get internal parameters
+        If getIntParameters(aIntPar) Then
+            aDwsName = If(aIntPar.value("WS", "DATA_MC") <> "", aIntPar.value("WS", "DATA_MC"), "Data")
+        End If
         If getManCostAllocParameters() = False Then
             Exit Sub
         End If
         If checkCon() = False Then
             Exit Sub
         End If
-        Dim aSAPAcctngManCostAlloc As New SAPAcctngManCostAlloc(aSapCon)
+        Dim aSAPAcctngManCostAlloc As New SAPAcctngManCostAlloc(aSapCon, pIntPar:=aIntPar)
         Dim aWB As Excel.Workbook
         Dim aDws As Excel.Worksheet
         aWB = Globals.SapCoExcelAddin.Application.ActiveWorkbook
         Try
-            aDws = aWB.Worksheets("Data")
+            aDws = aWB.Worksheets(aDwsName)
         Catch Exc As System.Exception
-            MsgBox("No Data Sheet in current workbook. Check if the current workbook is a valid SAP CO ManCostAlloc Template",
+            MsgBox("No " & aDwsName & " Sheet in current workbook. Check if the current workbook is a valid SAP CO ManCostAlloc Template",
                        MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "Sap CO-OM")
             Exit Sub
         End Try
@@ -548,17 +646,23 @@ Public Class SapCoRibbon
         Dim aPws As Excel.Worksheet
         Dim aWB As Excel.Workbook
         Dim aKey As String
+        Dim aIntPar As New SAPCommon.TStr
+        Dim aPwsName As String = "Parameter"
+        ' get internal parameters
+        If getIntParameters(aIntPar) Then
+            aPwsName = If(aIntPar.value("WS", "PARA_PA") <> "", aIntPar.value("WS", "PARA_PA"), "Parameter")
+        End If
         aWB = Globals.SapCoExcelAddin.Application.ActiveWorkbook
         Try
-            aPws = aWB.Worksheets("Parameter")
+            aPws = aWB.Worksheets(aPwsName)
         Catch Exc As System.Exception
-            MsgBox("No Parameter Sheet in current workbook. Check if the current workbook is a valid SAP CO-PA Actuals Template",
+            MsgBox("No " & aPwsName & " Sheet in current workbook. Check if the current workbook is a valid SAP CO-PA Actuals Template",
                    MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "Sap CO-OM")
             getCOPAParameters = False
             Exit Function
         End Try
         aKey = CStr(aPws.Cells(1, 1).Value)
-        If aKey <> "SAPCostingBasedData" Then
+        If aKey <> "SAPCostingBasedData" And aKey <> "SAPCoMultiple" Then
             MsgBox("Cell A1 of the parameter sheet does not contain the key SAPCostingBasedData. Check if the current workbook is a valid SAP CO-PA Actuals Template",
                    MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "Sap CO-OM")
             getCOPAParameters = False
@@ -591,11 +695,10 @@ Public Class SapCoRibbon
     End Sub
 
     Private Sub SAP_COPA_exec(pTest As Boolean)
-        Dim aSAPCOPAActuals As New SAPCOPAActuals(aSapCon)
         Dim aSAPCOPAItem As New SAPCOPAItem
         Dim aWB As Excel.Workbook
         Dim aDws As Excel.Worksheet
-        Dim aSAPFormat As New SAPFormat
+        Dim aSAPFormat As New SAPCommon.SAPFormat
         Dim aSAPProjectDefinition As New SAPProjectDefinition(aSapCon)
         Dim aSAPWbsElement As New SAPWbsElement(aSapCon)
         Dim aData As New Collection
@@ -615,18 +718,24 @@ Public Class SapCoRibbon
         Dim aCURRENCY As String
 
         Dim aCells As Excel.Range
-
+        Dim aIntPar As New SAPCommon.TStr
+        Dim aDwsName As String = "Data"
+        ' get internal parameters
+        If getIntParameters(aIntPar) Then
+            aDwsName = If(aIntPar.value("WS", "DATA_PA") <> "", aIntPar.value("WS", "DATA_PA"), "Data")
+        End If
         If getCOPAParameters() = False Then
             Exit Sub
         End If
         If checkCon() = False Then
             Exit Sub
         End If
+        Dim aSAPCOPAActuals As New SAPCOPAActuals(aSapCon, pIntPar:=aIntPar)
         aWB = Globals.SapCoExcelAddin.Application.ActiveWorkbook
         Try
-            aDws = aWB.Worksheets("Data")
+            aDws = aWB.Worksheets(aDwsName)
         Catch Exc As System.Exception
-            MsgBox("No Data Sheet in current workbook. Check if the current workbook is a valid SAP CO-PA Actuals Template",
+            MsgBox("No " & aDwsName & " Sheet in current workbook. Check if the current workbook is a valid SAP CO-PA Actuals Template",
                        MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "Sap CO-PA")
             Exit Sub
         End Try
@@ -656,9 +765,9 @@ Public Class SapCoRibbon
                     If aDws.Cells(2, j).Value IsNot Nothing Then
                         aCURRENCY = CStr(aDws.Cells(2, j).Value)
                         If aDws.Cells(i, j).Value IsNot Nothing Then
-                            aVALUE = FormatNumber(CDbl(aDws.Cells(i, j).Value), 2, True, False, False)
+                            aVALUE = aSAPFormat.dec(CStr(aDws.Cells(i, j).Value), 2)
                         Else
-                            aVALUE = FormatNumber(0, 2, True, False, False)
+                            aVALUE = aSAPFormat.dec("0", 2)
                         End If
                     Else
                         aCURRENCY = ""
@@ -690,7 +799,7 @@ Public Class SapCoRibbon
                                     ElseIf Left(aDws.Cells(3, j).Value, 1) = "P" Then
                                         aVALUE = aSAPFormat.pspid(aDws.Cells(i, j).Value, CInt(Right(aDws.Cells(3, j).Value, Len(aDws.Cells(3, j).Value) - 1)))
                                     Else
-                                        aVALUE = aDws.Cells(i, j).Value
+                                        aVALUE = CStr(aDws.Cells(i, j).Value)
                                     End If
                             End Select
                         End If
@@ -703,7 +812,13 @@ Public Class SapCoRibbon
                 Loop While CStr(aDws.Cells(1, j).Value) <> ""
                 aData.Add(aDataRow)
                 aLineCnt = aLineCnt + 1
-                If aLineCnt >= CInt(aMaxLines) Then
+                If CInt(aMaxLines) = 1 Then
+                    '     post the line
+                    Globals.SapCoExcelAddin.Application.StatusBar = "Posting at line " & i
+                    aRetStr = aSAPCOPAActuals.PostCostingBasedData(aOperatingConcern, aData, pCheck:=pTest)
+                    aDws.Cells(i, j).Value = aRetStr
+                    aData = New Collection
+                ElseIf aLineCnt >= CInt(aMaxLines) Then
                     aEndLine = i
                     '     post the lines
                     Globals.SapCoExcelAddin.Application.StatusBar = "Posting at line " & aEndLine
@@ -737,17 +852,23 @@ Public Class SapCoRibbon
         Dim aWB As Excel.Workbook
         Dim aKey As String
         Dim aDateFormatString As New DateFormatString
+        Dim aIntPar As New SAPCommon.TStr
+        Dim aPwsName As String = "Parameter"
+        ' get internal parameters
+        If getIntParameters(aIntPar) Then
+            aPwsName = If(aIntPar.value("WS", "PARA_SK") <> "", aIntPar.value("WS", "PARA_SK"), "Parameter")
+        End If
         aWB = Globals.SapCoExcelAddin.Application.ActiveWorkbook
         Try
-            aPws = aWB.Worksheets("Parameter")
+            aPws = aWB.Worksheets(aPwsName)
         Catch Exc As System.Exception
-            MsgBox("No Parameter Sheet in current workbook. Check if the current workbook is a valid SAP CO StatKeyFigure Template",
+            MsgBox("No " & aPwsName & " Sheet in current workbook. Check if the current workbook is a valid SAP CO StatKeyFigure Template",
                    MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "Sap CO-OM")
             getStatKeyFiguresParameters = False
             Exit Function
         End Try
         aKey = CStr(aPws.Cells(1, 1).Value)
-        If aKey <> "SAPAcctngPostStatKeyFigure" Then
+        If aKey <> "SAPAcctngPostStatKeyFigure" And aKey <> "SAPCoMultiple" Then
             MsgBox("Cell A1 of the parameter sheet does not contain the key SAPAcctngPostStatKeyFigure. Check if the current workbook is a valid SAP CO StatKeyFigure Template",
                    MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "Sap CO-OM")
             getStatKeyFiguresParameters = False
@@ -791,24 +912,29 @@ Public Class SapCoRibbon
         Dim aRetStr As String
         Dim aDateFormatString As New DateFormatString
         Dim aSapAcctngStatKeyFiguresDocItem As New SapAcctngStatKeyFiguresDocItem
-        Dim aSAPFormat As New SAPFormat
         Dim aFIELDNAME As String
         Dim aVALUE As Object
-
+        Dim aIntPar As New SAPCommon.TStr
+        Dim aDwsName As String = "Data"
+        ' get internal parameters
+        If getIntParameters(aIntPar) Then
+            aDwsName = If(aIntPar.value("WS", "DATA_SK") <> "", aIntPar.value("WS", "DATA_SK"), "Data")
+        End If
         If getStatKeyFiguresParameters() = False Then
             Exit Sub
         End If
         If checkCon() = False Then
             Exit Sub
         End If
-        Dim aSAPAcctngStatKeyFigures As New SapAcctngStatKeyFigures(aSapCon)
+        Dim aSAPFormat As New SAPFormat(pIntPar:=aIntPar)
+        Dim aSAPAcctngStatKeyFigures As New SapAcctngStatKeyFigures(aSapCon, pIntPar:=aIntPar)
         Dim aWB As Excel.Workbook
         Dim aDws As Excel.Worksheet
         aWB = Globals.SapCoExcelAddin.Application.ActiveWorkbook
         Try
-            aDws = aWB.Worksheets("Data")
+            aDws = aWB.Worksheets(aDwsName)
         Catch Exc As System.Exception
-            MsgBox("No Data Sheet in current workbook. Check if the current workbook is a valid SAP CO StatKeyFigures Template",
+            MsgBox("No " & aDwsName & " Sheet in current workbook. Check if the current workbook is a valid SAP CO StatKeyFigures Template",
                        MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "Sap CO-OM")
             Exit Sub
         End Try
@@ -891,6 +1017,68 @@ Public Class SapCoRibbon
             Globals.SapCoExcelAddin.Application.Cursor = Microsoft.Office.Interop.Excel.XlMousePointer.xlDefault
             MsgBox("Error: Exception " & Ex.Message, MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "SAP_StatKeyFigures_execute")
         End Try
+    End Sub
+
+    Private Sub ButtonGenerate_Click(sender As Object, e As RibbonControlEventArgs) Handles ButtonGenerate.Click
+        Dim aSapCoRibbonGenerate As New SapCoRibbonGenerate
+        Dim aIntPar As New SAPCommon.TStr
+        ' get internal parameters
+        If Not getIntParameters(aIntPar) Then
+            log.Error("ButtonGenerate_Click getIntParameters - " & "failed - exit")
+            Exit Sub
+        End If
+        ' get the ruleset limits
+        Dim aGenNrFrom As Integer = If(aIntPar.value("GEN", "RULESET_FROM") <> "", CInt(aIntPar.value("GEN", "RULESET_FROM")), 0)
+        Dim aGenNrTo As Integer = If(aIntPar.value("GEN", "RULESET_TO") <> "", CInt(aIntPar.value("GEN", "RULESET_TO")), 0)
+        Dim aGenNr As String = ""
+        For i As Integer = aGenNrFrom To aGenNrTo
+            Dim aNr As String = If(i = 0, "", CStr(i))
+            Dim aRunBefore As String = If(aIntPar.value("GEN" & aNr, "RUN_BEFORE") <> "", aIntPar.value("GEN" & aNr, "RUN_BEFORE"), "")
+            If aRunBefore = "GENWBS" Then
+                ' read the Template WBS Information from SAP
+                Dim aSapPsMdRibbonWbs As New SapPsMdRibbonWbs
+                If checkCon() = True Then
+                    aSapPsMdRibbonWbs.GetData(pSapCon:=aSapCon)
+                Else
+                    MsgBox("Checking SAP-Connection failed!", MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "ButtonGetWbs_Click")
+                End If
+                ' genertate the WBS-Elements
+                aSapCoRibbonGenerate.execWbs(pSapCon:=aSapCon)
+            End If
+            aSapCoRibbonGenerate.exec(pSapCon:=aSapCon, pNr:=aNr)
+        Next
+    End Sub
+
+    Private Sub ButtonGenerateWbs_Click(sender As Object, e As RibbonControlEventArgs) Handles ButtonGenerateWbs.Click
+        Dim aSapCoRibbonGenerate As New SapCoRibbonGenerate
+        aSapCoRibbonGenerate.execWbs(pSapCon:=aSapCon)
+    End Sub
+
+    Private Sub ButtonCreateWbs_Click(sender As Object, e As RibbonControlEventArgs) Handles ButtonCreateWbs.Click
+        Dim aSapPsMdRibbonWbs As New SapPsMdRibbonWbs
+        If checkCon() = True Then
+            aSapPsMdRibbonWbs.exec(pSapCon:=aSapCon, pMode:="Create")
+        Else
+            MsgBox("Checking SAP-Connection failed!", MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "ButtonGetWbs_Click")
+        End If
+    End Sub
+
+    Private Sub ButtonGetWbs_Click(sender As Object, e As RibbonControlEventArgs) Handles ButtonGetWbs.Click
+        Dim aSapPsMdRibbonWbs As New SapPsMdRibbonWbs
+        If checkCon() = True Then
+            aSapPsMdRibbonWbs.GetData(pSapCon:=aSapCon)
+        Else
+            MsgBox("Checking SAP-Connection failed!", MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "ButtonGetWbs_Click")
+        End If
+    End Sub
+
+    Private Sub ButtonWBSSetStatus_Click(sender As Object, e As RibbonControlEventArgs) Handles ButtonWBSSetStatus.Click
+        Dim aSapPsMdRibbonWbs As New SapPsMdRibbonWbs
+        If checkCon() = True Then
+            aSapPsMdRibbonWbs.Status(pSapCon:=aSapCon, pMode:="Set")
+        Else
+            MsgBox("Checking SAP-Connection failed!", MsgBoxStyle.OkOnly Or MsgBoxStyle.Critical, "ButtonWBSSetStatus_Click")
+        End If
     End Sub
 
 End Class

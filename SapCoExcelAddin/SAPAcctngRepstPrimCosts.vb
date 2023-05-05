@@ -9,8 +9,10 @@ Public Class SAPAcctngRepstPrimCosts
     Private oRfcFunction As IRfcFunction
     Private destination As RfcCustomDestination
     Private sapcon As SapCon
+    Private aIntPar As SAPCommon.TStr
 
-    Sub New(aSapCon As SapCon)
+    Sub New(aSapCon As SapCon, ByRef pIntPar As SAPCommon.TStr)
+        aIntPar = pIntPar
         Try
             sapcon = aSapCon
             aSapCon.getDestination(destination)
@@ -29,7 +31,7 @@ Public Class SAPAcctngRepstPrimCosts
                 oRfcFunction = destination.Repository.CreateFunction("BAPI_ACC_PRIMARY_COSTS_POST")
             End If
             RfcSessionManager.BeginContext(destination)
-            Dim lSAPFormat As New SAPFormat
+            Dim lSAPFormat As New SAPFormat(pIntPar:=aIntPar)
             Dim oDocHeader As IRfcStructure = oRfcFunction.GetStructure("DOC_HEADER")
             Dim oDocItems As IRfcTable = oRfcFunction.GetTable("DOC_ITEMS")
             Dim oRETURN As IRfcTable = oRfcFunction.GetTable("RETURN")

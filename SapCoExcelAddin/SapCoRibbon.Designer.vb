@@ -52,22 +52,31 @@
         Me.SAPManCostAlloc = Me.Factory.CreateRibbonGroup
         Me.ButtonManCostAllocCheck = Me.Factory.CreateRibbonButton
         Me.ButtonManCostAllocPost = Me.Factory.CreateRibbonButton
-        Me.SAPCOPAActuals = Me.Factory.CreateRibbonGroup
-        Me.ButtonCheckCostingBasedData = Me.Factory.CreateRibbonButton
-        Me.ButtonPostCostingBasedData = Me.Factory.CreateRibbonButton
-        Me.SAPCoLogon = Me.Factory.CreateRibbonGroup
-        Me.ButtonLogon = Me.Factory.CreateRibbonButton
-        Me.ButtonLogoff = Me.Factory.CreateRibbonButton
         Me.SAPStatKeyFigures = Me.Factory.CreateRibbonGroup
         Me.ButtonStatKeyFiguresCheck = Me.Factory.CreateRibbonButton
         Me.ButtonStatKeyFiguresPost = Me.Factory.CreateRibbonButton
+        Me.SAPCOPAActuals = Me.Factory.CreateRibbonGroup
+        Me.ButtonCheckCostingBasedData = Me.Factory.CreateRibbonButton
+        Me.ButtonPostCostingBasedData = Me.Factory.CreateRibbonButton
+        Me.SAP_COGenerate = Me.Factory.CreateRibbonGroup
+        Me.ButtonGenerate = Me.Factory.CreateRibbonButton
+        Me.ButtonGenerateWbs = Me.Factory.CreateRibbonButton
+        Me.SAP_COWbs = Me.Factory.CreateRibbonGroup
+        Me.ButtonCreateWbs = Me.Factory.CreateRibbonButton
+        Me.ButtonWBSSetStatus = Me.Factory.CreateRibbonButton
+        Me.ButtonGetWbs = Me.Factory.CreateRibbonButton
+        Me.SAPCoLogon = Me.Factory.CreateRibbonGroup
+        Me.ButtonLogon = Me.Factory.CreateRibbonButton
+        Me.ButtonLogoff = Me.Factory.CreateRibbonButton
         Me.SapCo.SuspendLayout()
         Me.SAPActivityAlloc.SuspendLayout()
         Me.SAPRepstPrimCosts.SuspendLayout()
         Me.SAPManCostAlloc.SuspendLayout()
-        Me.SAPCOPAActuals.SuspendLayout()
-        Me.SAPCoLogon.SuspendLayout()
         Me.SAPStatKeyFigures.SuspendLayout()
+        Me.SAPCOPAActuals.SuspendLayout()
+        Me.SAP_COGenerate.SuspendLayout()
+        Me.SAP_COWbs.SuspendLayout()
+        Me.SAPCoLogon.SuspendLayout()
         Me.SuspendLayout()
         '
         'SapCo
@@ -77,6 +86,8 @@
         Me.SapCo.Groups.Add(Me.SAPManCostAlloc)
         Me.SapCo.Groups.Add(Me.SAPStatKeyFigures)
         Me.SapCo.Groups.Add(Me.SAPCOPAActuals)
+        Me.SapCo.Groups.Add(Me.SAP_COGenerate)
+        Me.SapCo.Groups.Add(Me.SAP_COWbs)
         Me.SapCo.Groups.Add(Me.SAPCoLogon)
         Me.SapCo.Label = "SAP CO"
         Me.SapCo.Name = "SapCo"
@@ -150,50 +161,6 @@
         Me.ButtonManCostAllocPost.ScreenTip = "Post Manual Cost Allocation"
         Me.ButtonManCostAllocPost.ShowImage = True
         '
-        'SAPCOPAActuals
-        '
-        Me.SAPCOPAActuals.Items.Add(Me.ButtonCheckCostingBasedData)
-        Me.SAPCOPAActuals.Items.Add(Me.ButtonPostCostingBasedData)
-        Me.SAPCOPAActuals.Label = "CO-PA Actuals"
-        Me.SAPCOPAActuals.Name = "SAPCOPAActuals"
-        '
-        'ButtonCheckCostingBasedData
-        '
-        Me.ButtonCheckCostingBasedData.Image = CType(resources.GetObject("ButtonCheckCostingBasedData.Image"), System.Drawing.Image)
-        Me.ButtonCheckCostingBasedData.Label = "CostingBasedData Check"
-        Me.ButtonCheckCostingBasedData.Name = "ButtonCheckCostingBasedData"
-        Me.ButtonCheckCostingBasedData.ScreenTip = "Check posting of costing based data"
-        Me.ButtonCheckCostingBasedData.ShowImage = True
-        '
-        'ButtonPostCostingBasedData
-        '
-        Me.ButtonPostCostingBasedData.Image = CType(resources.GetObject("ButtonPostCostingBasedData.Image"), System.Drawing.Image)
-        Me.ButtonPostCostingBasedData.Label = "CostingBasedData Post"
-        Me.ButtonPostCostingBasedData.Name = "ButtonPostCostingBasedData"
-        Me.ButtonPostCostingBasedData.ScreenTip = "Post costing based data"
-        Me.ButtonPostCostingBasedData.ShowImage = True
-        '
-        'SAPCoLogon
-        '
-        Me.SAPCoLogon.Items.Add(Me.ButtonLogon)
-        Me.SAPCoLogon.Items.Add(Me.ButtonLogoff)
-        Me.SAPCoLogon.Label = "Logon"
-        Me.SAPCoLogon.Name = "SAPCoLogon"
-        '
-        'ButtonLogon
-        '
-        Me.ButtonLogon.Image = CType(resources.GetObject("ButtonLogon.Image"), System.Drawing.Image)
-        Me.ButtonLogon.Label = "SAP Logon"
-        Me.ButtonLogon.Name = "ButtonLogon"
-        Me.ButtonLogon.ShowImage = True
-        '
-        'ButtonLogoff
-        '
-        Me.ButtonLogoff.Image = CType(resources.GetObject("ButtonLogoff.Image"), System.Drawing.Image)
-        Me.ButtonLogoff.Label = "SAP Logoff"
-        Me.ButtonLogoff.Name = "ButtonLogoff"
-        Me.ButtonLogoff.ShowImage = True
-        '
         'SAPStatKeyFigures
         '
         Me.SAPStatKeyFigures.Items.Add(Me.ButtonStatKeyFiguresCheck)
@@ -217,6 +184,97 @@
         Me.ButtonStatKeyFiguresPost.ScreenTip = "Post Stat. Key Figure Documnt"
         Me.ButtonStatKeyFiguresPost.ShowImage = True
         '
+        'SAPCOPAActuals
+        '
+        Me.SAPCOPAActuals.Items.Add(Me.ButtonCheckCostingBasedData)
+        Me.SAPCOPAActuals.Items.Add(Me.ButtonPostCostingBasedData)
+        Me.SAPCOPAActuals.Label = "CO-PA Actuals"
+        Me.SAPCOPAActuals.Name = "SAPCOPAActuals"
+        '
+        'ButtonCheckCostingBasedData
+        '
+        Me.ButtonCheckCostingBasedData.Image = CType(resources.GetObject("ButtonCheckCostingBasedData.Image"), System.Drawing.Image)
+        Me.ButtonCheckCostingBasedData.Label = "CostingBasedData Check"
+        Me.ButtonCheckCostingBasedData.Name = "ButtonCheckCostingBasedData"
+        Me.ButtonCheckCostingBasedData.ScreenTip = "Check posting of costing based data"
+        Me.ButtonCheckCostingBasedData.ShowImage = True
+        '
+        'ButtonPostCostingBasedData
+        '
+        Me.ButtonPostCostingBasedData.Image = CType(resources.GetObject("ButtonPostCostingBasedData.Image"), System.Drawing.Image)
+        Me.ButtonPostCostingBasedData.Label = "CostingBasedData Post"
+        Me.ButtonPostCostingBasedData.Name = "ButtonPostCostingBasedData"
+        Me.ButtonPostCostingBasedData.ScreenTip = "Post costing based data"
+        Me.ButtonPostCostingBasedData.ShowImage = True
+        '
+        'SAP_COGenerate
+        '
+        Me.SAP_COGenerate.Items.Add(Me.ButtonGenerate)
+        Me.SAP_COGenerate.Items.Add(Me.ButtonGenerateWbs)
+        Me.SAP_COGenerate.Label = "Generate"
+        Me.SAP_COGenerate.Name = "SAP_COGenerate"
+        '
+        'ButtonGenerate
+        '
+        Me.ButtonGenerate.Image = CType(resources.GetObject("ButtonGenerate.Image"), System.Drawing.Image)
+        Me.ButtonGenerate.Label = "Generate Data"
+        Me.ButtonGenerate.Name = "ButtonGenerate"
+        Me.ButtonGenerate.ShowImage = True
+        '
+        'ButtonGenerateWbs
+        '
+        Me.ButtonGenerateWbs.Label = "Generate WBS"
+        Me.ButtonGenerateWbs.Name = "ButtonGenerateWbs"
+        '
+        'SAP_COWbs
+        '
+        Me.SAP_COWbs.Items.Add(Me.ButtonCreateWbs)
+        Me.SAP_COWbs.Items.Add(Me.ButtonWBSSetStatus)
+        Me.SAP_COWbs.Items.Add(Me.ButtonGetWbs)
+        Me.SAP_COWbs.Label = "WBS"
+        Me.SAP_COWbs.Name = "SAP_COWbs"
+        '
+        'ButtonCreateWbs
+        '
+        Me.ButtonCreateWbs.Image = CType(resources.GetObject("ButtonCreateWbs.Image"), System.Drawing.Image)
+        Me.ButtonCreateWbs.Label = "Create WBS"
+        Me.ButtonCreateWbs.Name = "ButtonCreateWbs"
+        Me.ButtonCreateWbs.ShowImage = True
+        '
+        'ButtonWBSSetStatus
+        '
+        Me.ButtonWBSSetStatus.Image = CType(resources.GetObject("ButtonWBSSetStatus.Image"), System.Drawing.Image)
+        Me.ButtonWBSSetStatus.Label = "Set Status WBS"
+        Me.ButtonWBSSetStatus.Name = "ButtonWBSSetStatus"
+        Me.ButtonWBSSetStatus.ScreenTip = "Set Status WBS"
+        Me.ButtonWBSSetStatus.ShowImage = True
+        '
+        'ButtonGetWbs
+        '
+        Me.ButtonGetWbs.Label = "Get WBS"
+        Me.ButtonGetWbs.Name = "ButtonGetWbs"
+        '
+        'SAPCoLogon
+        '
+        Me.SAPCoLogon.Items.Add(Me.ButtonLogon)
+        Me.SAPCoLogon.Items.Add(Me.ButtonLogoff)
+        Me.SAPCoLogon.Label = "Logon"
+        Me.SAPCoLogon.Name = "SAPCoLogon"
+        '
+        'ButtonLogon
+        '
+        Me.ButtonLogon.Image = CType(resources.GetObject("ButtonLogon.Image"), System.Drawing.Image)
+        Me.ButtonLogon.Label = "SAP Logon"
+        Me.ButtonLogon.Name = "ButtonLogon"
+        Me.ButtonLogon.ShowImage = True
+        '
+        'ButtonLogoff
+        '
+        Me.ButtonLogoff.Image = CType(resources.GetObject("ButtonLogoff.Image"), System.Drawing.Image)
+        Me.ButtonLogoff.Label = "SAP Logoff"
+        Me.ButtonLogoff.Name = "ButtonLogoff"
+        Me.ButtonLogoff.ShowImage = True
+        '
         'SapCoRibbon
         '
         Me.Name = "SapCoRibbon"
@@ -230,12 +288,16 @@
         Me.SAPRepstPrimCosts.PerformLayout()
         Me.SAPManCostAlloc.ResumeLayout(False)
         Me.SAPManCostAlloc.PerformLayout()
-        Me.SAPCOPAActuals.ResumeLayout(False)
-        Me.SAPCOPAActuals.PerformLayout()
-        Me.SAPCoLogon.ResumeLayout(False)
-        Me.SAPCoLogon.PerformLayout()
         Me.SAPStatKeyFigures.ResumeLayout(False)
         Me.SAPStatKeyFigures.PerformLayout()
+        Me.SAPCOPAActuals.ResumeLayout(False)
+        Me.SAPCOPAActuals.PerformLayout()
+        Me.SAP_COGenerate.ResumeLayout(False)
+        Me.SAP_COGenerate.PerformLayout()
+        Me.SAP_COWbs.ResumeLayout(False)
+        Me.SAP_COWbs.PerformLayout()
+        Me.SAPCoLogon.ResumeLayout(False)
+        Me.SAPCoLogon.PerformLayout()
         Me.ResumeLayout(False)
 
     End Sub
@@ -259,6 +321,13 @@
     Friend WithEvents SAPStatKeyFigures As Microsoft.Office.Tools.Ribbon.RibbonGroup
     Friend WithEvents ButtonStatKeyFiguresCheck As Microsoft.Office.Tools.Ribbon.RibbonButton
     Friend WithEvents ButtonStatKeyFiguresPost As Microsoft.Office.Tools.Ribbon.RibbonButton
+    Friend WithEvents SAP_COGenerate As Microsoft.Office.Tools.Ribbon.RibbonGroup
+    Friend WithEvents ButtonGenerate As Microsoft.Office.Tools.Ribbon.RibbonButton
+    Friend WithEvents SAP_COWbs As Microsoft.Office.Tools.Ribbon.RibbonGroup
+    Friend WithEvents ButtonCreateWbs As Microsoft.Office.Tools.Ribbon.RibbonButton
+    Friend WithEvents ButtonGetWbs As Microsoft.Office.Tools.Ribbon.RibbonButton
+    Friend WithEvents ButtonGenerateWbs As Microsoft.Office.Tools.Ribbon.RibbonButton
+    Friend WithEvents ButtonWBSSetStatus As Microsoft.Office.Tools.Ribbon.RibbonButton
 End Class
 
 Partial Class ThisRibbonCollection

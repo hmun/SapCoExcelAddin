@@ -22,10 +22,11 @@ Public Class SAPBapiTranctionCommit
         End Try
     End Sub
 
-    Public Function commit() As Integer
+    Public Function commit(Optional pWait As String = "") As Integer
         sapcon.checkCon()
         Try
-            log.Debug("commit - " & "invoking " & oRfcFunction.Metadata.Name)
+            log.Debug("commit - " & "invoking " & oRfcFunction.Metadata.Name & "pWait=" & pWait)
+            oRfcFunction.SetValue("WAIT", pWait)
             oRfcFunction.Invoke(destination)
             commit = 0
             Exit Function
