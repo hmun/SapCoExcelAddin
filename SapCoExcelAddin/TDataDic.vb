@@ -87,4 +87,39 @@ Public Class TDataDic
         End If
     End Sub
 
+    Public Sub to_IRfcTableX(pKey As String, ByRef pIRfcTable As IRfcTable, Optional pKeyFields() As String = Nothing)
+        Dim aTData As TData
+        Dim aKvP As KeyValuePair(Of String, TDataRec)
+        Dim aTDataRec As TDataRec
+        If aTDataDic.ContainsKey(pKey) Then
+            aTData = aTDataDic(pKey)
+            For Each aKvP In aTData.aTDataDic
+                Dim oAppended As Boolean = False
+                aTDataRec = aKvP.Value
+                For Each aTStrRec In aTDataRec.aTDataRecCol
+                    If Not oAppended Then
+                        pIRfcTable.Append()
+                        oAppended = True
+                    End If
+                    If Not pKeyFields Is Nothing Then
+                        If isInArray(aTStrRec.Fieldname, pKeyFields) Then
+                            pIRfcTable.SetValue(CType(aTStrRec.Fieldname, String), CType(aTStrRec.formated(), String))
+                        Else
+                            pIRfcTable.SetValue(CType(aTStrRec.Fieldname, String), "X")
+                        End If
+                    Else
+                        pIRfcTable.SetValue(CType(aTStrRec.Fieldname, String), "X")
+                    End If
+                Next
+            Next
+        End If
+    End Sub
+
+    Private Function isInArray(pString As String, pArray As Object) As Boolean
+        Dim st As String, M As String
+        M = "$"
+        st = M & Join(pArray, M) & M
+        isInArray = InStr(st, M & pString & M) > 0
+    End Function
+
 End Class

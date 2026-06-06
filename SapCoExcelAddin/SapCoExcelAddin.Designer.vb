@@ -197,7 +197,20 @@ Partial Friend NotInheritable Class Globals
             End If
         End Set
     End Property
-    
+
+    Friend Shared Property ThisAddIn() As SapCoExcelAddin
+        Get
+            Return _SapCoExcelAddin
+        End Get
+        Set
+            If (_SapCoExcelAddin Is Nothing) Then
+                _SapCoExcelAddin = Value
+            Else
+                Throw New System.NotSupportedException()
+            End If
+        End Set
+    End Property
+
     Friend Shared Property Factory() As Global.Microsoft.Office.Tools.Excel.ApplicationFactory
         Get
             Return _factory

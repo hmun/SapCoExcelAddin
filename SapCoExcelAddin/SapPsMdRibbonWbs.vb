@@ -378,7 +378,7 @@ Public Class SapPsMdRibbonWbs
                         aTSAP_WbsStatusData = New TSAP_WbsGenData(aPar, aIntPar, aSAPWBSPI, "SetStatus")
                     End If
                     ' read DATA
-                    aWbsItems.ws_parse_line_simple(aWbsWsName, aWbsLOff, i, jMax, pHdrLine:=1, pUplLine:=aLOffCtrl + 1)
+                    aWbsItems.ws_parse_line_simple_ps(aWbsWsName, aWbsLOff, i, jMax, pHdrLine:=1, pUplLine:=aLOffCtrl + 1)
                     If aTSAP_WbsStatusData.fillData(aWbsItems) Then
                         ' check if we should dump this document
                         If aObjNr = aDumpObjNr Then
@@ -481,7 +481,7 @@ Public Class SapPsMdRibbonWbs
                 If Left(CStr(aWLiWs.Cells(i, aMsgClmnNr).Value), Len(aOKMsg)) <> aOKMsg Then
                     aKey = CStr(i)
                     Dim aWLiItems As New TData(aIntPar)
-                    aWLiItems.ws_parse_line_simple(aWLiWsName, aWbsLOff, i, jMax)
+                    aWLiItems.ws_parse_line_simple(aWLiWs, aWbsLOff, i, jMax)
                     Dim aTSAP_WbsGenData As New TSAP_WbsGenData(aPar, aIntPar, aSAPWBSPI, "GetData")
                     If aTSAP_WbsGenData.fillHeader(aWLiItems) And aTSAP_WbsGenData.fillData(aWLiItems) Then
                         log.Debug("SapPsMdRibbonWbs.GetData - " & "calling aSAPWBSPI.GetData")
@@ -498,7 +498,7 @@ Public Class SapPsMdRibbonWbs
                             Dim aTData As TData
                             If aTSAP_WbsGenData.aDataDic.aTDataDic.ContainsKey("ET_WBS_ELEMENT") Then
                                 aTData = aTSAP_WbsGenData.aDataDic.aTDataDic("ET_WBS_ELEMENT")
-                                aTData.ws_output(pWs:=aWbsWs, pLoff:=aWbsLOff, pCoff:=0, pPar:=aIntPar, pClear:=aClear, pKey:="")
+                                aTData.ws_output_ps(pWs:=aWbsWs, pLoff:=aWbsLOff, pCoff:=0, pPar:=aIntPar, pClear:=aClear, pKey:="")
                             End If
                         End If
                     End If

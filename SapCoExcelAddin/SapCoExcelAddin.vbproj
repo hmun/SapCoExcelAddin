@@ -36,7 +36,7 @@
     <PublishUrl>T:\hmun\VbaGit_64\SapCoExcelAddin\x86\</PublishUrl>
     <InstallUrl />
     <TargetCulture>en</TargetCulture>
-    <ApplicationVersion>1.0.3.8</ApplicationVersion>
+    <ApplicationVersion>1.0.4.0</ApplicationVersion>
     <AutoIncrementApplicationRevision>true</AutoIncrementApplicationRevision>
     <UpdateEnabled>true</UpdateEnabled>
     <UpdateInterval>7</UpdateInterval>
@@ -239,13 +239,25 @@
   -->
   <ItemGroup>
     <AppDesigner Include="My Project\" />
-    <Compile Include="MigHelper.vb" />
+    <Compile Include="FormLogon.designer.vb">
+      <DependentUpon>FormLogon.vb</DependentUpon>
+    </Compile>
+    <Compile Include="FormLogon.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="MigHelperVsto.vb" />
+    <Compile Include="Ribbon_Generate.vb" />
+    <Compile Include="SAPAcctngMeta.vb" />
     <Compile Include="SapAcctngStatKeyFigures.vb" />
-    <Compile Include="SapAcctngStatKeyFiguresDocItem.vb" />
     <Compile Include="SAPBapiPS.vb" />
+    <Compile Include="SapCon.vb" />
     <Compile Include="SAPCOPAActuals.vb" />
     <Compile Include="SAPCOPAItem.vb" />
-    <Compile Include="SapCoRibbonGenerate.vb" />
+    <Compile Include="SapCoRibbon_AcctngActivityAlloc.vb" />
+    <Compile Include="SapCoRibbon_AcctngManCostAlloc.vb" />
+    <Compile Include="SapCoRibbon_AcctngRepstPrimCosts.vb" />
+    <Compile Include="SapCoRibbon_AcctngStatKeyFigures.vb" />
+    <Compile Include="SapCoRibbon_PostCOPA.vb" />
     <Compile Include="SAPProjectDefinition.vb" />
     <Compile Include="DateFormatString.vb" />
     <Compile Include="FormDestinations.Designer.vb">
@@ -254,20 +266,10 @@
     <Compile Include="FormDestinations.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FormLogon.Designer.vb">
-      <DependentUpon>FormLogon.vb</DependentUpon>
-    </Compile>
-    <Compile Include="FormLogon.vb">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="SAPAcctngActivityAlloc.vb" />
     <Compile Include="SAPAcctngManCostAlloc.vb" />
-    <Compile Include="SAPAcctngPrimCostsItem.vb" />
-    <Compile Include="SAPAcctngActivityItem.vb" />
     <Compile Include="SAPAcctngRepstPrimCosts.vb" />
     <Compile Include="SAPBapiTranctionCommit.vb" />
-    <Compile Include="SapCon.vb" />
-    <Compile Include="SAPCOObject.vb" />
     <Compile Include="SapCoRibbon.Designer.vb">
       <DependentUpon>SapCoRibbon.vb</DependentUpon>
     </Compile>
@@ -287,9 +289,8 @@
     <Compile Include="TData.vb" />
     <Compile Include="TDataDic.vb" />
     <Compile Include="TDataRec.vb" />
-    <Compile Include="TField.vb" />
-    <Compile Include="TPostingData.vb" />
-    <Compile Include="TPostingDataRec.vb" />
+    <Compile Include="TSAP_Data_CoPa.vb" />
+    <Compile Include="TSAP_Data_Co.vb" />
     <Compile Include="TSAP_WbsChgData.vb" />
     <Compile Include="TSAP_WbsData.vb" />
     <Compile Include="TSAP_WbsSettleData.vb" />
@@ -389,7 +390,7 @@
     </ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>5F76AF419AD2A8F9976728B49A6C32C0D90E2021</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>AB3D07FD538B99A74D431A9A603B929C48A856B2</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>

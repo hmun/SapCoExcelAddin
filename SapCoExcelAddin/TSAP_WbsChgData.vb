@@ -47,6 +47,7 @@ Public Class TSAP_WbsChgData
         Dim aKvB As KeyValuePair(Of String, TDataRec)
         Dim aTDataRec As TDataRec
         Dim aTStrRec As SAPCommon.TStrRec
+        Dim aNewTStrRec As SAPCommon.TStrRec
         Dim aWbsRec As SAPCommon.TStrRec
         Dim aCnt As UInt64
         aData = New TData(aIntPar)
@@ -64,7 +65,7 @@ Public Class TSAP_WbsChgData
                         If aTStrRec.Fieldname = "WBS_ELEMENT" Then
                             aData.addValue(CStr(aCnt), aTStrRec, pNewStrucname:=sWbs_Upd, pUseAsEmpty:=aUseAsEmpty)
                         Else
-                            aData.addValue(CStr(aCnt), sWbs_Upd & "-" & aTStrRec.Fieldname, "X", "", "", pUseAsEmpty:=aUseAsEmpty)
+                            aData.addValue(CStr(aCnt), sWbs_Upd & "-" & aTStrRec.Fieldname, "X", "", "", pEmptyChar:=aUseAsEmpty)
                         End If
                     End If
                 ElseIf valid_Ext_Field(aTStrRec) Then

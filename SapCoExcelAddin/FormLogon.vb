@@ -3,6 +3,7 @@
 ' For a human readable version of the license, see https://creativecommons.org/licenses/by/4.0/
 
 Public Class FormLogon
+    Public isSNC As Boolean = False
     Private Sub ButtonCancel_Click(sender As Object, e As EventArgs) Handles ButtonCancel.Click
         DialogResult = System.Windows.Forms.DialogResult.Cancel
         Me.Close()
@@ -10,7 +11,7 @@ Public Class FormLogon
 
     Private Sub ButtonLogon_Click(sender As Object, e As EventArgs) Handles ButtonLogon.Click
 
-        If Me.UserName.Enabled = True Then
+        If isSNC = False Then
             If Me.Client.Text = "" Or Me.Password.Text = "" Or Me.UserName.Text = "" Then
                 MsgBox("Enter Client, Username and Password", MsgBoxStyle.Exclamation Or MsgBoxStyle.OkOnly)
             Else
